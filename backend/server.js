@@ -57,7 +57,7 @@ app.use(
 app.use(express.json());
 
 //get the spotify access token using clientid,code and verifier
-app.post("/exchange-token", async (req, res) => {
+app.post("/auth/spotify/exchange-token", async (req, res) => {
   const { clientId, code, codeVerifier } = req.body; // Expecting the code verifier from the frontend
   const params = new URLSearchParams();
   params.append("client_id", clientId);
@@ -95,7 +95,7 @@ app.post("/exchange-token", async (req, res) => {
 });
 
 //fetch the spotify profile using the spotify access token stored in session
-app.get("/profile", async (req, res) => {
+app.get("/auth/spotify/profile", async (req, res) => {
   console.log("Profile Route");
   console.log("Session ID:", req.sessionID);
 
@@ -150,7 +150,7 @@ passport.serializeUser((user, done) => done(null, user));
 passport.deserializeUser((user, done) => done(null, user));
 
 //go to authorization when link is clicked
-app.get("/", (req, res) => {
+app.get("/auth", (req, res) => {
   res.send("<a href= '/auth/google/'>Login with Google</a>");
 });
 
@@ -165,12 +165,14 @@ app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    res.redirect("/profile");
+    res.redirect("/profile/google");
   }
 );
 
 //on successful google auth display user name
-app.get("/profile", (req, res) => {
+app.get("/profile/google", (req, res) => {
+  // console.log(req);
+  // console.log(req.body);
   res.send(`Welcome ${req.user.displayName}`);
 });
 
@@ -185,45 +187,78 @@ app.get("/", (req, res) => {
   res.send("Server is ready");
 });
 
-app.post("/users", async (req, res) => {
+app.get("/tracks", async (req, res) => {
   try {
-    //check for username
-    const { error } = validateUser(req.body);
-    if (error) return res.status(400).send(error.details[0].message);
-    //get username
-    const { user_name } = req.body;
-    const newUser = await database.query();
+    const allTracks = await pool.query("SELECT * FROM track");
+    res.send(allTracks.rows);
   } catch (err) {
-    //pass the error to middleware
-    next(error);
+    console.error(err.message);
   }
 });
 
-// app.post("/", async (req, res) => {
-//   res.header("Access-Control-Allow-Origin", "http://localhost:5173");
-//   res.header("Referrer-Policy", "no-referrer-when-downgrade");
-
-//   const redirectURL = "http://127.0.0.1:3000/oauth";
-//   const oAuth2Client = new OAuth2Client(
-//     process.env.CLIENT_ID,
-//     process.env.CLIENT_SECRET,
-//     redirectURL
-//   );
-
-//   const authorizeUrl = oAuth2Client.generateAuthUrl({
-//     access_type: "offline",
-//     scope: "https://www.googleapis.com/auth/userinfo.profile openid",
-//     prompt: "consent",
-//   });
-
-//   res.json({ url: authorizeUrl });
+// app.post("/tracks", async (req, res) => {
+//   try {
+//     const{id,name,} = req.body;
+//     const newTrack = await pool.query("INSERT INTO track (description) VALUES($1) RETURNING *",[description]);
+//     res.json(newTrack.rows[0]);
+//   } catch (err) {
+//     console.error(err.message);
+//   }
 // });
 
-// //ensure a username has been entered
-// function validateUser(user) {
-//   const schema = Joi.object({
-//     user_name: Joi.string().min(3).required(),
-//   });
+app.get("/users", async (req, res) => {
+  try {
+    const allUsers = await database.query("SELECT * FROM user_");
+    res.send(allUsers.rows);
+  } catch (err) {
+    console.error(err.message);
+  }
+});
 
-//   return schema.validate(request);
-// }
+app.post("/users", async (req, res) => {
+  try {
+    //check for username
+    // const { error } = validateUser(req.body);
+    // if (error) return res.status(400).send(error.details[0].message);
+    // if (error) return res.status(400).send(error);
+    //get username
+    const { user_id, user_name, type_, email, image_url } = req.body;
+    const newUser = await database.query(
+      "INSERT INTO user_ (user_id, user_name, type_, email, image_url) VALUES($1,$2,$3,$4,$5) RETURNING *",
+      [user_id, user_name, type_, email, image_url]
+    );
+    res.json(newUser.rows[0]);
+  } catch (err) {
+    // //pass the error to middleware
+    // next(error);
+    console.error("Console Error: " + err.message);
+  }
+});
+
+app.delete("/users/:id", async (req, res) => {
+  try {
+    const user = await database.query(
+      "SELECT * FROM user_ WHERE user_id = $1",
+      [req.params.id]
+    );
+    if (user.rows[0] == undefined)
+      return res.status(404).send("The user with the given ID was not found");
+    const updateUser = await database.query(
+      "DELETE FROM user_ WHERE user_id = $1",
+      [req.params.id]
+    );
+    res.send(`User with ID: ${req.params.id} was deleted`);
+  } catch (err) {
+    console.error("Console Error: " + err.message);
+  }
+});
+
+//ensure a username has been entered
+function validateUser(user) {
+  const schema = Joi.object({
+    // email: Joi.string().required(),
+    allowUnknown: true,
+  });
+
+  return schema.validate(user);
+}
