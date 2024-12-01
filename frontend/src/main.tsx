@@ -1,13 +1,31 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import "./index.css";
 import App from "./App.tsx";
-// import { GoogleOAuthProvider } from "@react-oauth/google";
+import "bootstrap/dist/css/bootstrap.css";
+import SpotifyAuth from "./pages/SpotifyAuth.tsx";
+import GoogleAuth from "./pages/GoogleAuth.tsx";
+
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import NotFoundPage from "./pages/NotFoundPage.tsx";
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <App />,
+    errorElement: <NotFoundPage />,
+  },
+  {
+    path: "/auth/spotify",
+    element: <SpotifyAuth />,
+  },
+  {
+    path: "/auth/google",
+    element: <GoogleAuth />,
+  },
+]);
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
-    {/* <GoogleOAuthProvider clientId="982088853000-6n7v5o77q20ku0bk36gbem9vm5qn9q7i.apps.googleusercontent.com"> */}
-    <App />
-    {/* </GoogleOAuthProvider> */}
+    {/* <App /> */}
+    <RouterProvider router={router} />
   </StrictMode>
 );

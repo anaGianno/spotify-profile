@@ -50,9 +50,11 @@ app.use(passport.session());
 app.use(
   cors({
     origin: "http://localhost:5173",
+    methods: "GET, POST",
     credentials: true, // Allow cookies to be sent
   })
 );
+
 //give access to request body to get json data
 app.use(express.json());
 
@@ -165,7 +167,8 @@ app.get(
   "/auth/google/callback",
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    res.redirect("/profile/google");
+    // res.redirect("/profile/google");
+    res.redirect("http://localhost:5173/123"); // Adjust as needed
   }
 );
 

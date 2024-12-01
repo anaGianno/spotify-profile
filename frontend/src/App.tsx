@@ -1,9 +1,9 @@
 // import { useState } from "react";
 import "./App.css";
 // import { GoogleLogin } from "@react-oauth/google";
-// import { jwtDecode } from "jwt-decode";
 
-// import googleButton from "./assets/btn_google_signin_dark_pressed_web.png";
+import googleButton from "./assets/btn_google_signin_dark_pressed_web.png";
+import OauthButton from "./components/OauthButton";
 
 // function navigate(url: string) {
 //   window.location.href = url;
@@ -20,9 +20,12 @@ import "./App.css";
 function App() {
   return (
     <>
+      {/* <button type="button" onClick={() => auth()}>
+        <img src={googleButton} alt="google sign in" />
+      </button> */}
       {/* <h1>Welcome</h1>
       <h3>Google OAuth</h3>
-      <button type="button" onClick={() => auth()}>
+      <button type="button">
         <img src={googleButton} alt="google sign in" />
       </button> */}
 
@@ -35,6 +38,14 @@ function App() {
           console.log("Login Failed");
         }}
       /> */}
+
+      <OauthButton route="/auth/spotify" color="success">
+        Sign in with Spotify
+      </OauthButton>
+
+      <OauthButton route="/auth/google" color="light">
+        Sign in with Google
+      </OauthButton>
     </>
   );
 }
