@@ -60,36 +60,59 @@ app.use(express.json());
 
 //get the spotify access token using clientid,code and verifier
 app.post("/auth/spotify/exchange-token", async (req, res) => {
-  const { clientId, code, codeVerifier } = req.body; // Expecting the code verifier from the frontend
+  // get params expected from the frontend
+  const { clientId, code, codeVerifier } = req.body;
+
+  // console.log("\nSession data before saving token: ", req.session);
+  // // //verify paramters
+  // console.log("\nIncoming request:", { clientId, code, codeVerifier });
+
+  if (!clientId || !code || !codeVerifier) {
+    return res.status(400).json({ error: "Missing required parameters" });
+  }
+
   const params = new URLSearchParams();
   params.append("client_id", clientId);
   params.append("grant_type", "authorization_code");
   params.append("code", code);
-  params.append("redirect_uri", "http://localhost:5173/callback");
+  params.append("redirect_uri", "http://localhost:5173/auth/spotify/callback");
   params.append("code_verifier", codeVerifier);
 
+  //log payload sent to spotify
+  // console.log("\nParams sent to Spotify API:", params.toString());
+
   //fetch the spotify api token
-  const result = await fetch("https://accounts.spotify.com/api/token", {
+  const response = await fetch("https://accounts.spotify.com/api/token", {
     method: "POST",
     headers: { "Content-Type": "application/x-www-form-urlencoded" },
     body: params,
   });
 
-  const tokenData = await result.json();
+  //error handling
+  if (!response.ok) {
+    const errorDetails = await response.json();
+    console.error("Spotify token exchange failed:", errorDetails);
+    return res.status(response.status).json(errorDetails);
+  }
+  const tokenData = await response.json();
 
+  //check for successful fetch
   if (tokenData.access_token) {
-    // Store the access token in the session
+    //set the sessions access token to the one received from spotify
     req.session.accessToken = tokenData.access_token;
+
+    //save the session so that the access token in the session can be used for fetching spotify profile
     req.session.save((err) => {
       if (err) {
         console.error("Error saving session:", err);
         return res.status(500).json({ error: "Failed to save session" });
       }
-      console.log("Exchange token route");
-      console.log("Session ID:", req.sessionID);
+      // console.log("\nResponse: ", res.body);
+      // console.log("\nExchange token route");
+      // console.log("\nSession ID:", req.sessionID);
+      // console.log("\nSession saved: ", req.session);
 
-      console.log(req.session);
-      res.json({ success: true }); // Send a success response
+      res.json({ success: true });
     });
   } else {
     res.status(400).json({ error: "Failed to exchange token" });
@@ -98,11 +121,16 @@ app.post("/auth/spotify/exchange-token", async (req, res) => {
 
 //fetch the spotify profile using the spotify access token stored in session
 app.get("/auth/spotify/profile", async (req, res) => {
-  console.log("Profile Route");
-  console.log("Session ID:", req.sessionID);
+  // console.log(
+  //   "\nSession data before making api request to spotify for profile, look for token:",
+  //   req.session
+  // );
+  // console.log("\nProfile Route");
+  // console.log("Session ID:", req.sessionID);
+  // console.log(req.session);
 
-  console.log(req.session);
-  const accessToken = req.session.accessToken; // Retrieve access token from session
+  // Retrieve access token from session
+  const accessToken = req.session.accessToken;
 
   //check for an access token
   if (!accessToken) {
@@ -145,16 +173,10 @@ passport.use(
   )
 );
 
-//session management
-//saving user data inside session:
+//session management, saving user data inside session:
 passport.serializeUser((user, done) => done(null, user));
 //retrieving user data when needed
 passport.deserializeUser((user, done) => done(null, user));
-
-//go to authorization when link is clicked
-app.get("/auth", (req, res) => {
-  res.send("<a href= '/auth/google/'>Login with Google</a>");
-});
 
 //authenticate through google: retreiving users profile and email, then go to callback URL
 app.get(
@@ -168,15 +190,27 @@ app.get(
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
     // res.redirect("/profile/google");
-    res.redirect("http://localhost:5173/123"); // Adjust as needed
+    //redirect to frontend
+    res.redirect("http://localhost:5173/auth/google/callback");
   }
 );
 
-//on successful google auth display user name
 app.get("/profile/google", (req, res) => {
-  // console.log(req);
-  // console.log(req.body);
-  res.send(`Welcome ${req.user.displayName}`);
+  try {
+    if (!req.user) {
+      throw new Error("User is not authenticated");
+    }
+    res.status(200).json(req.user);
+  } catch (error) {
+    console.error("Error in /profile/google:", error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+//on successful google auth display user name
+app.get("/profile/spotify", (req, res) => {
+  // res.send(`Welcome ${req.user.displayName}`);
+  res.send("Body: ", req.body);
 });
 
 app.get("/logout", (req, res) => {

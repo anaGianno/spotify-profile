@@ -18,6 +18,7 @@ import OauthButton from "./components/OauthButton";
 // }
 
 function App() {
+  console.log("test1");
   return (
     <>
       {/* <button type="button" onClick={() => auth()}>

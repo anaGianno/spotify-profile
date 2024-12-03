@@ -4,6 +4,7 @@ import App from "./App.tsx";
 import "bootstrap/dist/css/bootstrap.css";
 import SpotifyAuth from "./pages/SpotifyAuth.tsx";
 import GoogleAuth from "./pages/GoogleAuth.tsx";
+import Profile from "./pages/Profile.tsx";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import NotFoundPage from "./pages/NotFoundPage.tsx";
@@ -18,14 +19,22 @@ const router = createBrowserRouter([
     element: <SpotifyAuth />,
   },
   {
+    path: "/auth/spotify/callback",
+    element: <SpotifyAuth />,
+  },
+  {
     path: "/auth/google",
     element: <GoogleAuth />,
+  },
+  {
+    path: "/auth/google/callback",
+    element: <Profile />,
   },
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    {/* <App /> */}
-    <RouterProvider router={router} />
-  </StrictMode>
+  // <StrictMode>
+  //<App />
+  <RouterProvider router={router} />
+  // </StrictMode>
 );

@@ -1,61 +1,104 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 
 const clientId = "12e3e93e854549c2a30f11df737b1a1d";
 
 const SpotifyAuth = () => {
+  // console.log("test2");
   const navigate = useNavigate();
 
+  //runs after component has rendered; initiating logic on update
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const code = params.get("code");
 
+    //function that makes requests to backend for spotify access token and profile
     const handleCallback = async () => {
+      //verify that request is authentic
       const verifier = localStorage.getItem("verifier");
-      const response = await fetch("http://localhost:3000/exchange-token", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ clientId, code, codeVerifier: verifier }),
-      });
+      // console.log("verifier from localstorage: ", verifier);
 
-      const status = await response.json();
-      console.log(status);
+      try {
+        //make a request to backend which gets the spotify access token
+        // console.log("Sending to exchange token:", { clientId, code, verifier });
+        const response = await fetch(
+          "http://localhost:3000/auth/spotify/exchange-token",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            //include session cookie
+            credentials: "include",
+            body: JSON.stringify({ clientId, code, codeVerifier: verifier }),
+          }
+        );
 
-      const profileResponse = await fetch("http://localhost:3000/profile", {
-        method: "GET",
-        credentials: "include",
-      });
+        //error handling
+        if (!response.ok) {
+          throw new Error("Failed to exchange token");
+        }
 
+        //log status of request to backend
+        // const status = await response.json();
+        // console.log("Spotify access token response: " + status);
+      } catch (error) {
+        console.error("Error during token exchange: ", error);
+      }
+
+      //make a GET request to backend which gets the spotify profile using the spotify access token
+      const profileResponse = await fetch(
+        "http://localhost:3000/auth/spotify/profile",
+        {
+          method: "GET",
+          //include session cookie
+          credentials: "include",
+        }
+      );
+
+      //log status of request to backend
       const profileData = await profileResponse.json();
       console.log(profileData);
 
       // navigate("/profile"); // Redirect to a profile page after successful authentication
     };
 
+    //function which redirects the user to the Spotify Authentication page
     const redirectToAuthCodeFlow = async () => {
+      //verify that the request is authentic
       const verifier = generateCodeVerifier(128);
+      // console.log("verifier generated: ", verifier);
+      //hashed version of verifier
       const challenge = await generateCodeChallenge(verifier);
+
+      //store verifier data in local storage: works like a password
       localStorage.setItem("verifier", verifier);
 
       const authParams = new URLSearchParams();
       authParams.append("client_id", clientId);
       authParams.append("response_type", "code");
-      authParams.append("redirect_uri", "http://localhost:5173/callback");
+      //URL that spotify will redirect after user authorization
+      authParams.append(
+        "redirect_uri",
+        "http://localhost:5173/auth/spotify/callback"
+      );
+      //list of permissions
       authParams.append("scope", "user-read-private user-read-email");
       authParams.append("code_challenge_method", "S256");
       authParams.append("code_challenge", challenge);
 
+      //Redirect to Spotify authorization page
       window.location.href = `https://accounts.spotify.com/authorize?${authParams.toString()}`;
     };
 
+    //if callback contains code parameter make request to backend, otherwise redirect to auth page
     if (!code) {
       redirectToAuthCodeFlow();
     } else {
       handleCallback();
     }
-  }, [navigate]);
+  }, []);
+  // [] ensures that useEffect only runs once when component mounts
 
+  //generates the verifier used as an authentication parameter
   const generateCodeVerifier = (length: number): string => {
     const possible =
       "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
@@ -64,6 +107,7 @@ const SpotifyAuth = () => {
     ).join("");
   };
 
+  //generates the hashed version of the verifier
   const generateCodeChallenge = async (
     codeVerifier: string
   ): Promise<string> => {
