@@ -198,10 +198,12 @@ app.get(
 app.get("/profile/google", (req, res) => {
   try {
     if (!req.user) {
+      console.log("User is not authenticated");
       throw new Error("User is not authenticated");
     }
     res.status(200).json(req.user);
   } catch (error) {
+    console.log("Error in /profile/google:", error);
     console.error("Error in /profile/google:", error);
     res.status(500).json({ error: error.message });
   }
@@ -242,6 +244,21 @@ app.post("/users", async (req, res) => {
     // if (error) return res.status(400).send(error);
     //get username
     const { user_id, user_name, type_, email, image_url } = req.body;
+    const user = await database.query(
+      "SELECT * FROM user_ WHERE user_id = $1",
+      [user_id]
+    );
+
+    console.log("user: ", user);
+    // Check if any rows are returned
+    if (user.rows.length > 0) {
+      if (type_ === "spotify" || type_ === "google") {
+        return res
+          .status(403)
+          .send("The user with the given ID was already found");
+      }
+    }
+
     const newUser = await database.query(
       "INSERT INTO user_ (user_id, user_name, type_, email, image_url) VALUES($1,$2,$3,$4,$5) RETURNING *",
       [user_id, user_name, type_, email, image_url]

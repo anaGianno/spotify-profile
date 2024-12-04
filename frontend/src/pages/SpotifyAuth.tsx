@@ -40,25 +40,56 @@ const SpotifyAuth = () => {
         //log status of request to backend
         // const status = await response.json();
         // console.log("Spotify access token response: " + status);
-      } catch (error) {
-        console.error("Error during token exchange: ", error);
-      }
 
-      //make a GET request to backend which gets the spotify profile using the spotify access token
-      const profileResponse = await fetch(
-        "http://localhost:3000/auth/spotify/profile",
-        {
-          method: "GET",
+        //make a GET request to backend which gets the spotify profile using the spotify access token
+        const profileResponse = await fetch(
+          "http://localhost:3000/auth/spotify/profile",
+          {
+            method: "GET",
+            //include session cookie
+            credentials: "include",
+          }
+        );
+
+        //log status of request to backend
+        const profileData = await profileResponse.json();
+        console.log(profileData);
+
+        const user_id = profileData.id;
+        const user_name = profileData.display_name;
+        const type_ = "spotify";
+        const email = profileData.email;
+        const image_url = profileData.images[0].url;
+
+        console.log("User params: ", {
+          user_id,
+          user_name,
+          type_,
+          email,
+          image_url,
+        });
+
+        const addUser = await fetch("http://localhost:3000/users", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           //include session cookie
           credentials: "include",
+          body: JSON.stringify({ user_id, user_name, type_, email, image_url }),
+        });
+
+        if (!addUser.ok) {
+          console.error("Error adding profile:", addUser.statusText);
+          const errorText = await addUser.text();
+          console.error("Add user error:", errorText);
         }
-      );
 
-      //log status of request to backend
-      const profileData = await profileResponse.json();
-      console.log(profileData);
+        //log status of request to backend
+        console.log("User status: ", addUser);
 
-      // navigate("/profile"); // Redirect to a profile page after successful authentication
+        navigate(`/profiles/${user_id}`); // Redirect to a profile page after successful authentication
+      } catch (error) {
+        console.error("SpotifyAuth error: ", error);
+      }
     };
 
     //function which redirects the user to the Spotify Authentication page

@@ -4,6 +4,7 @@ import App from "./App.tsx";
 import "bootstrap/dist/css/bootstrap.css";
 import SpotifyAuth from "./pages/SpotifyAuth.tsx";
 import GoogleAuth from "./pages/GoogleAuth.tsx";
+import GoogleProfile from "./pages/GoogleProfile.tsx";
 import Profile from "./pages/Profile.tsx";
 
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -28,6 +29,11 @@ const router = createBrowserRouter([
   },
   {
     path: "/auth/google/callback",
+    element: <GoogleProfile />,
+  },
+  {
+    //dynamic path
+    path: "/profiles/:profileId",
     element: <Profile />,
   },
 ]);

@@ -1,33 +1,9 @@
-import { useEffect } from "react";
+import { useParams } from "react-router-dom";
 
 function Profile() {
-  useEffect(() => {
-    const handleCallback = async () => {
-      try {
-        const profileResponse = await fetch(
-          "http://localhost:3000/profile/google",
-          {
-            method: "GET",
-            credentials: "include", // Include cookies
-          }
-        );
-
-        if (!profileResponse.ok) {
-          console.error("Error fetching profile:", profileResponse.statusText);
-          return;
-        }
-
-        const profileData = await profileResponse.json();
-        console.log("Profile Data:", profileData);
-      } catch (error) {
-        console.error("Error in handleCallback:", error);
-      }
-    };
-
-    handleCallback();
-  }, []);
-
-  return <div>Profile</div>;
+  const params = useParams<{ profileId: string }>();
+  console.log(params);
+  return <div>Profile {params.profileId}</div>;
 }
 
 export default Profile;
