@@ -32,6 +32,51 @@ CREATE TABLE album(
  album_user_id VARCHAR(255) REFERENCES user_(user_id)
 )
 
+CREATE OR REPLACE FUNCTION fn_merge_accounts()
+    RETURNS TRIGGER
+    LANGUAGE PLPGSQL
+AS
+$body$
+BEGIN
+    -- Check if there's an existing user with the same email and a different type
+    IF EXISTS (
+        SELECT 1 
+        FROM user_
+        WHERE email = NEW.email AND type_ <> NEW.type_
+    ) THEN
+        -- Update more values if its a google user
+		IF EXISTS(
+			SELECT 1 
+			FROM user_
+			where email = NEW.email and type_ = 'google'
+		) THEN
+			UPDATE user_
+			SET user_id = NEW.user_id,
+			user_name = NEW.user_name,
+			image_url = NEW.image_url
+			WHERE email = NEW.email;
+		END IF;
+		
+        -- Update the account to include both types
+        UPDATE user_
+        SET type_ = 'spotify-google'
+        WHERE email = NEW.email;
+
+        -- Suppress insertion of the new row
+        RETURN NULL;
+    END IF;
+
+    -- Allow the new row to be inserted if no matching email is found
+    RETURN NEW;
+END;
+$body$;
+
+CREATE TRIGGER tr_merge_accounts
+    BEFORE INSERT
+    ON user_
+    FOR EACH ROW
+    EXECUTE FUNCTION fn_merge_accounts();
+
 DROP TABLE track
 DROP TABLE artist
 DROP TABLE album

@@ -236,6 +236,30 @@ app.get("/users", async (req, res) => {
   }
 });
 
+app.get("/users/:email", async (req, res) => {
+  try {
+    const user = await database.query(
+      "SELECT * FROM user_ WHERE email = $1 AND (type_ = 'spotify' OR type_ ='spotify-google')",
+      [req.params.email]
+    );
+
+    console.log("user: ", user);
+    // Check if any rows are returned
+    if (user.rows.length == 0) {
+      return res.status(404).json({
+        error: `The user with the email: ${req.params.email} was not found/linked with spotify.`,
+      });
+      // return res.send("No spotify user with this email");
+    }
+
+    res.send(user.rows);
+  } catch (err) {
+    // //pass the error to middleware
+    // next(error);
+    console.error("Console Error: " + err.message);
+  }
+});
+
 app.post("/users", async (req, res) => {
   try {
     //check for username

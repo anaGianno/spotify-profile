@@ -24,13 +24,15 @@ function GoogleProfile() {
         // log profile data and navigate to profiles page using google id
         const profileData = await profileResponse.json();
         console.log("Profile Data:", profileData);
-        // [user_id, user_name, type_, email, image_url]
+
         const user_id = profileData.id;
 
         const user_name = profileData.displayName;
         const type_ = "google";
-        const email = profileData.emails[0].value;
+        let emailUpper = profileData.emails[0].value;
         const image_url = profileData.photos[0].value;
+
+        let email = emailUpper.toLowerCase();
 
         console.log("User params: ", {
           user_id,
@@ -56,6 +58,29 @@ function GoogleProfile() {
 
         //log status of request to backend
         console.log("User status: ", addUser);
+
+        const spotifyUser = await fetch(
+          `http://localhost:3000/users/${encodeURIComponent(email)}`,
+          {
+            method: "GET",
+            //include session cookie
+            credentials: "include",
+          }
+        );
+
+        console.log("Spotify User: ", spotifyUser);
+        if (!spotifyUser.ok) {
+          console.error("Error adding profile:", spotifyUser.statusText);
+          const errorText = await spotifyUser.text();
+          console.error("Add user error:", errorText);
+        } else {
+          const spotifyData = await spotifyUser.json();
+          console.log("Spotify Data:", spotifyData);
+
+          const spotifyID = spotifyData[0].user_id;
+          navigate(`/profiles/${spotifyID}`);
+          return;
+        }
 
         navigate(`/profiles/${user_id}`);
       } catch (error) {
