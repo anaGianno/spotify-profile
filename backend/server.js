@@ -236,7 +236,7 @@ app.get("/users", async (req, res) => {
   }
 });
 
-app.get("/users/:email", async (req, res) => {
+app.get("/users/email/:email", async (req, res) => {
   try {
     const user = await database.query(
       "SELECT * FROM user_ WHERE email = $1 AND (type_ = 'spotify' OR type_ ='spotify-google')",
@@ -260,6 +260,23 @@ app.get("/users/:email", async (req, res) => {
   }
 });
 
+app.get("/users/:id", async (req, res) => {
+  try {
+    const user = await database.query(
+      "SELECT * FROM user_ WHERE user_id = $1",
+      [req.params.id]
+    );
+    console.log("user1234 req.params.id : " + req.params.id);
+    console.log("user1234 : " + JSON.stringify(user, null, 2));
+    console.log("user1234 rows : " + JSON.stringify(user.rows, null, 2));
+    if (user.rows[0] == undefined)
+      return res.status(404).send("The user with the given ID was not found");
+    res.send(user.rows[0]);
+  } catch (err) {
+    console.error("Console Error: " + err.message);
+  }
+});
+
 app.post("/users", async (req, res) => {
   try {
     //check for username
@@ -273,7 +290,7 @@ app.post("/users", async (req, res) => {
       [user_id]
     );
 
-    console.log("user: ", user);
+    console.log("post user: ", user);
     // Check if any rows are returned
     if (user.rows.length > 0) {
       if (type_ === "spotify" || type_ === "google") {

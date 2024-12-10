@@ -60,7 +60,7 @@ function GoogleProfile() {
         console.log("User status: ", addUser);
 
         const spotifyUser = await fetch(
-          `http://localhost:3000/users/${encodeURIComponent(email)}`,
+          `http://localhost:3000/users/email/${encodeURIComponent(email)}`,
           {
             method: "GET",
             //include session cookie
