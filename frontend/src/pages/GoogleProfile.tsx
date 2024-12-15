@@ -8,7 +8,7 @@ function GoogleProfile() {
       try {
         // request backend for google profile
         const profileResponse = await fetch(
-          "http://localhost:3000/profile/google",
+          "http://localhost:3000/auth/google/profile",
           {
             method: "GET",
             credentials: "include", // Include cookies
@@ -42,7 +42,7 @@ function GoogleProfile() {
           image_url,
         });
 
-        const addUser = await fetch("http://localhost:3000/users", {
+        const addUser = await fetch("http://localhost:3000/user", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           //include session cookie
@@ -60,7 +60,7 @@ function GoogleProfile() {
         console.log("User status: ", addUser);
 
         const spotifyUser = await fetch(
-          `http://localhost:3000/users/email/${encodeURIComponent(email)}`,
+          `http://localhost:3000/user/email/${encodeURIComponent(email)}`,
           {
             method: "GET",
             //include session cookie
@@ -78,11 +78,11 @@ function GoogleProfile() {
           console.log("Spotify Data:", spotifyData);
 
           const spotifyID = spotifyData[0].user_id;
-          navigate(`/profiles/${spotifyID}`);
+          navigate(`/profile/${spotifyID}`);
           return;
         }
 
-        navigate(`/profiles/${user_id}`);
+        navigate(`/profile/${user_id}`);
       } catch (error) {
         console.error("Error in handleCallback:", error);
         console.log("Error in handleCallback:", error);

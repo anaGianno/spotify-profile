@@ -69,7 +69,7 @@ const SpotifyAuth = () => {
           image_url,
         });
 
-        const addUser = await fetch("http://localhost:3000/users", {
+        const addUser = await fetch("http://localhost:3000/user", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           //include session cookie
@@ -86,7 +86,7 @@ const SpotifyAuth = () => {
         //log status of request to backend
         console.log("User status: ", addUser);
 
-        navigate(`/profiles/${user_id}`); // Redirect to a profile page after successful authentication
+        navigate(`/profile/${user_id}`); // Redirect to a profile page after successful authentication
       } catch (error) {
         console.error("SpotifyAuth error: ", error);
       }

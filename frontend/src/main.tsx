@@ -33,7 +33,7 @@ const router = createBrowserRouter([
   },
   {
     //dynamic path
-    path: "/profiles/:profileId",
+    path: "/profile/:profileId",
     element: <Profile />,
   },
 ]);

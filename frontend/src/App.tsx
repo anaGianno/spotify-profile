@@ -2,7 +2,6 @@
 import "./App.css";
 // import { GoogleLogin } from "@react-oauth/google";
 
-import googleButton from "./assets/btn_google_signin_dark_pressed_web.png";
 import OauthButton from "./components/OauthButton";
 
 // function navigate(url: string) {
@@ -18,7 +17,6 @@ import OauthButton from "./components/OauthButton";
 // }
 
 function App() {
-  console.log("test1");
   return (
     <>
       {/* <button type="button" onClick={() => auth()}>

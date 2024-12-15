@@ -13,7 +13,7 @@ function Profile() {
   useEffect(() => {
     const handleCallback = async () => {
       try {
-        const user = await fetch(`http://localhost:3000/users/${profile_id}`, {
+        const user = await fetch(`http://localhost:3000/user/${profile_id}`, {
           method: "GET",
           //include session cookie
           credentials: "include",
