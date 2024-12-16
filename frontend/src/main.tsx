@@ -1,19 +1,22 @@
-import { StrictMode } from "react";
+// import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "bootstrap/dist/css/bootstrap.css";
+
+// import router and pages
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import SpotifyAuth from "./pages/SpotifyAuth.tsx";
 import GoogleAuth from "./pages/GoogleAuth.tsx";
 import GoogleProfile from "./pages/GoogleProfile.tsx";
 import Profile from "./pages/Profile.tsx";
+import NotFound from "./pages/NotFound.tsx";
 
-import { createBrowserRouter, RouterProvider } from "react-router-dom";
-import NotFoundPage from "./pages/NotFoundPage.tsx";
+// set all routes to a page
 const router = createBrowserRouter([
   {
     path: "/",
     element: <App />,
-    errorElement: <NotFoundPage />,
+    errorElement: <NotFound />,
   },
   {
     path: "/auth/spotify",
@@ -32,7 +35,7 @@ const router = createBrowserRouter([
     element: <GoogleProfile />,
   },
   {
-    //dynamic path
+    //dynamic path for each profile
     path: "/profile/:profileId",
     element: <Profile />,
   },

@@ -1,16 +1,17 @@
-//import database
 const database = require("../models/database");
 
+// search spotify for album/artist/track
 const searchSpotify = async (req, res) => {
+  // get parameters from request
   const { query, type } = req.query;
+
+  // get client id and secret
   const credentials = Buffer.from(
     `${process.env.SPOTIFY_CLIENT_ID}:${process.env.SPOTIFY_CLIENT_SECRET}`
   ).toString("base64");
 
-  console.log("Client ID:", process.env.SPOTIFY_CLIENT_ID);
-  console.log("Client Secret:", process.env.SPOTIFY_CLIENT_SECRET);
-
   try {
+    // fetch spotify token
     const tokenResponse = await fetch(
       "https://accounts.spotify.com/api/token",
       {
@@ -25,22 +26,15 @@ const searchSpotify = async (req, res) => {
 
     const tokenData = await tokenResponse.json();
 
-    if (tokenData.access_token) {
-      console.log("Spotify Access Token:", tokenData.access_token);
-    } else {
-      console.error("Error retrieving Spotify token:", tokenData);
+    // return error if fetch to spotify failed
+    if (!tokenData.access_token) {
+      const errorDetails = await tokenResponse.json();
+      console.error("Error with Spotify token exchange: ", errorDetails);
+      return res.status(tokenResponse.status).json(errorDetails);
     }
 
-    console.log("Query:", query);
-    console.log("Type:", type);
-    console.log(
-      "Fetch: ",
-      `https://api.spotify.com/v1/search?q=${encodeURIComponent(
-        query
-      )}&type=${type}&limit=5&offset=0`
-    );
-
-    const response = await fetch(
+    // fetch query response
+    const searchReponse = await fetch(
       `https://api.spotify.com/v1/search?q=${encodeURIComponent(
         query
       )}&type=${type}&limit=5&offset=0`,
@@ -50,15 +44,20 @@ const searchSpotify = async (req, res) => {
       }
     );
 
-    if (!response.ok) {
-      throw new Error(`Spotify API Error: ${response.statusText}`);
+    // return error if query unsuccessful
+    if (!searchReponse.ok) {
+      return res
+        .status(result.status)
+        .send("Error: failed to fetch spotify profile");
     }
 
-    const data = await response.json();
+    const data = await searchReponse.json();
     res.json(data);
   } catch (error) {
-    console.error("Spotify API Search Error: ", error.message);
+    console.error("Spotify API search error: ", error.message);
+    return res.status(500).send("Spotify API search error: " + err.message);
   }
 };
 
+// export method
 module.exports = { searchSpotify };

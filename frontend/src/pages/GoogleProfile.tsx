@@ -3,78 +3,98 @@ import { useNavigate } from "react-router-dom";
 
 function GoogleProfile() {
   const navigate = useNavigate();
+
   useEffect(() => {
-    const handleCallback = async () => {
+    const fetchUser = async () => {
       try {
-        // request backend for google profile
+        // fetch google profile
         const profileResponse = await fetch(
           "http://localhost:3000/auth/google/profile",
           {
             method: "GET",
-            credentials: "include", // Include cookies
-          }
-        );
-
-        if (!profileResponse.ok) {
-          console.error("Error fetching profile:", profileResponse.statusText);
-          console.log("Error fetching profile:", profileResponse.statusText);
-          return;
-        }
-
-        // log profile data and navigate to profiles page using google id
-        const profileData = await profileResponse.json();
-        console.log("Profile Data:", profileData);
-
-        const user_id = profileData.id;
-
-        const user_name = profileData.displayName;
-        const type_ = "google";
-        let emailUpper = profileData.emails[0].value;
-        const image_url = profileData.photos[0].value;
-
-        let email = emailUpper.toLowerCase();
-
-        console.log("User params: ", {
-          user_id,
-          user_name,
-          type_,
-          email,
-          image_url,
-        });
-
-        const addUser = await fetch("http://localhost:3000/user", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          //include session cookie
-          credentials: "include",
-          body: JSON.stringify({ user_id, user_name, type_, email, image_url }),
-        });
-
-        if (!addUser.ok) {
-          console.error("Error adding profile:", addUser.statusText);
-          const errorText = await addUser.text();
-          console.error("Add user error:", errorText);
-        }
-
-        //log status of request to backend
-        console.log("User status: ", addUser);
-
-        const spotifyUser = await fetch(
-          `http://localhost:3000/user/email/${encodeURIComponent(email)}`,
-          {
-            method: "GET",
-            //include session cookie
             credentials: "include",
           }
         );
 
-        console.log("Spotify User: ", spotifyUser);
-        if (!spotifyUser.ok) {
-          console.error("Error adding profile:", spotifyUser.statusText);
-          const errorText = await spotifyUser.text();
-          console.error("Add user error:", errorText);
+        // log error when failed to get google profile
+        if (!profileResponse.ok) {
+          const status = profileResponse.status;
+          const statusText = profileResponse.statusText;
+          const errorDetails = await profileResponse.text();
+
+          console.error("Error fetching google profile:", {
+            status,
+            statusText,
+            details: errorDetails,
+          });
+
+          return;
+        }
+
+        // log profile data
+        const profileData = await profileResponse.json();
+        console.log("Profile Data :", profileData);
+
+        // get user parameters from profile
+        const user_id = profileData.id;
+        const user_name = profileData.displayName;
+        const type_ = "google";
+        let emailUpper = profileData.emails[0].value;
+        let email = emailUpper.toLowerCase();
+        const image_url = profileData.photos[0].value;
+
+        // add user to database
+        const addUserResponse = await fetch("http://localhost:3000/user", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ user_id, user_name, type_, email, image_url }),
+        });
+
+        // log error if adding user failed
+        if (!addUserResponse.ok) {
+          const status = addUserResponse.status;
+          const statusText = addUserResponse.statusText;
+          const errorDetails = await addUserResponse.text();
+
+          console.error("Error adding profile to database:", {
+            status,
+            statusText,
+            details: errorDetails,
+          });
+
+          return;
+        }
+
+        // log response
+        console.log("Add google user response: " + addUserResponse);
+
+        // check if user has spotify linked
+        const spotifyUserResponse = await fetch(
+          `http://localhost:3000/user/email/${encodeURIComponent(email)}`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
+
+        // log response
+        console.log("Spotify User: ", spotifyUserResponse);
+
+        // log error if adding spotify account is unsuccessful
+        if (!spotifyUserResponse.ok) {
+          const status = spotifyUserResponse.status;
+          const statusText = spotifyUserResponse.statusText;
+          const errorDetails = await spotifyUserResponse.text();
+
+          console.error("Error fetching spotify profile:", {
+            status,
+            statusText,
+            details: errorDetails,
+          });
         } else {
-          const spotifyData = await spotifyUser.json();
+          // otherwise navigate to spotify profile page
+          const spotifyData = await spotifyUserResponse.json();
           console.log("Spotify Data:", spotifyData);
 
           const spotifyID = spotifyData[0].user_id;
@@ -82,14 +102,14 @@ function GoogleProfile() {
           return;
         }
 
+        // navigate to google profile page
         navigate(`/profile/${user_id}`);
       } catch (error) {
-        console.error("Error in handleCallback:", error);
-        console.log("Error in handleCallback:", error);
+        console.error("Error authenticating google user: ", error);
       }
     };
 
-    handleCallback();
+    fetchUser();
   }, []);
 
   return <div>GoogleProfile</div>;

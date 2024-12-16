@@ -1,108 +1,122 @@
-//import database
 const database = require("../models/database");
 
+// get all users from database
 const getAllUsers = async (req, res) => {
   try {
     const allUsers = await database.query("SELECT * FROM user_");
     res.send(allUsers.rows);
   } catch (err) {
-    console.error(err.message);
+    console.error("Error getting all users: ", err.message);
+    return res.status(500).send("Error getting all users: " + err.message);
   }
 };
 
+// get user from database
 const getUser = async (req, res) => {
   try {
+    // get user using id
     const user = await database.query(
       "SELECT * FROM user_ WHERE user_id = $1",
       [req.params.id]
     );
-    console.log("user1234 req.params.id : " + req.params.id);
-    console.log("user1234 : " + JSON.stringify(user, null, 2));
-    console.log("user1234 rows : " + JSON.stringify(user.rows, null, 2));
+
+    // return error if user not found
     if (user.rows[0] == undefined)
-      return res.status(404).send("The user with the given ID was not found");
+      return res
+        .status(404)
+        .send(`Error: user with ID ${req.params.id} not found`);
+
     res.send(user.rows[0]);
   } catch (err) {
-    console.error("Console Error: " + err.message);
+    console.error("Error getting user: ", err.message);
+    return res.status(500).send("Error getting user: " + err.message);
   }
 };
 
+// add user to database
 const addUser = async (req, res) => {
   try {
-    //check for username
-    // const { error } = validateUser(req.body);
-    // if (error) return res.status(400).send(error.details[0].message);
-    // if (error) return res.status(400).send(error);
-    //get username
+    // get parameters from request
     const { user_id, user_name, type_, email, image_url } = req.body;
-    const user = await database.query(
+
+    // check for existing user
+    const userResponse = await database.query(
       "SELECT * FROM user_ WHERE user_id = $1",
       [user_id]
     );
 
-    console.log("post user: ", user);
-    // Check if any rows are returned
-    if (user.rows.length > 0) {
-      if (type_ === "spotify" || type_ === "google") {
-        return res
-          .status(403)
-          .send("The user with the given ID was already found");
-      }
+    // return error if user already exists
+    if (userResponse.rows.length > 0) {
+      return res.status(200).send("Adding user with given ID already exists");
     }
 
-    const newUser = await database.query(
+    // add user
+    const newUserResponse = await database.query(
       "INSERT INTO user_ (user_id, user_name, type_, email, image_url) VALUES($1,$2,$3,$4,$5) RETURNING *",
       [user_id, user_name, type_, email, image_url]
     );
-    res.json(newUser.rows[0]);
+
+    res.json(newUserResponse.rows[0]);
   } catch (err) {
-    // //pass the error to middleware
-    // next(error);
-    console.error("Console Error: " + err.message);
+    console.error("Error adding user: ", err.message);
+    return res.status(500).send("Error adding user: " + err.message);
   }
 };
 
+// delete user from database
 const deleteUser = async (req, res) => {
   try {
+    // get user
     const user = await database.query(
       "SELECT * FROM user_ WHERE user_id = $1",
       [req.params.id]
     );
+
+    // return error if user not found
     if (user.rows[0] == undefined)
-      return res.status(404).send("The user with the given ID was not found");
-    const updateUser = await database.query(
+      return res
+        .status(404)
+        .send(`Error: user with ID ${req.params.id} not found`);
+
+    // delete user
+    const deleteUser = await database.query(
       "DELETE FROM user_ WHERE user_id = $1",
       [req.params.id]
     );
+
     res.send(`User with ID: ${req.params.id} was deleted`);
   } catch (err) {
-    console.error("Console Error: " + err.message);
+    console.error("Error deleting user: ", err.message);
+    return res.status(500).send("Error deleting user: " + err.message);
   }
 };
+
+// check if user has spotify linked
 const checkSpotifyEmail = async (req, res) => {
   try {
+    // get user
     const user = await database.query(
       "SELECT * FROM user_ WHERE email = $1 AND (type_ = 'spotify' OR type_ ='spotify-google')",
       [req.params.email]
     );
 
-    console.log("user: ", user);
-    // Check if any rows are returned
+    // return error if user was not found/linked
     if (user.rows.length == 0) {
-      return res.status(404).json({
-        error: `The user with the email: ${req.params.email} was not found/linked with spotify.`,
-      });
-      // return res.send("No spotify user with this email");
+      return res
+        .status(404)
+        .send(
+          `Error: user with the email: ${req.params.email} was not found/linked with spotify.`
+        );
     }
 
     res.send(user.rows);
   } catch (err) {
-    // //pass the error to middleware
-    // next(error);
-    console.error("Console Error: " + err.message);
+    console.error("Error checking spotify email: ", err.message);
+    return res.status(500).send("Error checking spotify email: " + err.message);
   }
 };
 
+// export methods
 module.exports = {
   getAllUsers,
   getUser,

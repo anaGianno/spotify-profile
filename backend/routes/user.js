@@ -2,9 +2,10 @@ const express = require("express");
 const router = express.Router();
 const userController = require("../controllers/userController");
 
+// define routes
 router.get("/", userController.getAllUsers);
 router.get("/:id", userController.getUser);
-router.put("/", userController.addUser);
+router.post("/", userController.addUser);
 router.delete("/:id", userController.deleteUser);
 router.get("/email/:email", userController.checkSpotifyEmail);
 

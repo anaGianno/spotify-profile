@@ -6,7 +6,7 @@ const NotFoundPage = () => {
       404 Not Found
       <br></br>
       {/* Non Native link which does not full page refresh */}
-      <Link to="/">Home from Link</Link>
+      <Link to="/">Return to homepage</Link>
     </div>
   );
 };

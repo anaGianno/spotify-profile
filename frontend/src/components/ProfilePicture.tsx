@@ -3,7 +3,7 @@ interface Props {
 }
 
 const ProfilePicture = ({ src }: Props) => {
-  console.log("Profile picture src: " + src);
+  // console.log("Profile picture src: " + src);
   return <img src={src} className="img-fluid" alt="profile-picture"></img>;
 };
 

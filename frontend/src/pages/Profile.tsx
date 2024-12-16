@@ -3,54 +3,70 @@ import ProfilePicture from "../components/ProfilePicture";
 import { useState, useEffect } from "react";
 
 function Profile() {
+  // initialize image and username in null state
   const [image_url, setImage_url] = useState(null);
   const [user_name, setUser_name] = useState(null);
-  const params = useParams<{ profileId: string }>();
-  console.log(params);
 
+  // initialize profile ID from URL
+  const params = useParams<{ profileId: string }>();
   const profile_id = params.profileId;
 
   useEffect(() => {
-    const handleCallback = async () => {
+    const handleProfile = async () => {
       try {
-        const user = await fetch(`http://localhost:3000/user/${profile_id}`, {
-          method: "GET",
-          //include session cookie
-          credentials: "include",
-        });
+        // fetch user
+        const userResponse = await fetch(
+          `http://localhost:3000/user/${profile_id}`,
+          {
+            method: "GET",
+            credentials: "include",
+          }
+        );
 
-        console.log("Profile.tsx user: ", user);
-        const userData = await user.json();
-        console.log("User Data:", userData);
+        if (!userResponse.ok) {
+          const status = userResponse.status;
+          const statusText = userResponse.statusText;
+          const errorDetails = await userResponse.text();
 
-        // const image_url = userData.image_url;
+          console.error("Error fetching user profile:", {
+            status,
+            statusText,
+            details: errorDetails,
+          });
+        }
+
+        // log user response and data
+        console.log("User response: ", userResponse);
+        const userData = await userResponse.json();
+        console.log("User Data: ", userData);
+
+        // set state of image and username to user data
         setImage_url(userData.image_url);
         setUser_name(userData.user_name);
       } catch (error) {
-        console.error("Error in handleCallback:", error);
+        console.error("Error in profile callback: ", error);
       }
     };
 
-    handleCallback();
+    handleProfile();
   }, []);
 
   return (
+    // display profile
     <>
       <div>Profile {params.profileId}</div>
+
+      {/* display image if available */}
       {image_url ? (
-        <ProfilePicture src={image_url} /> // Display the profile picture once image_url is available
+        <ProfilePicture src={image_url} />
       ) : (
-        <div>No image available</div> // Show a fallback if image_url is null
+        <div>No image available</div>
       )}
-      {user_name ? (
-        <div>{user_name}</div> // Display the profile picture once image_url is available
-      ) : (
-        <div>No user_name available</div> // Show a fallback if image_url is null
-      )}
+
+      {/* display username if available */}
+      {user_name ? <div>{user_name}</div> : <div>No user_name available</div>}
     </>
   );
-
-  // return <div>Profile {params.profileId}</div>;
 }
 
 export default Profile;

@@ -1,143 +1,146 @@
-//import database
-const database = require("../models/database");
-
 const passport = require("passport");
 
-//get the spotify access token using clientid,code and verifier
-const getAccessToken = async (req, res) => {
-  // get params expected from the frontend
-  const { clientId, code, codeVerifier } = req.body;
+// get spotify access token
+const getSpotifyAccessToken = async (req, res) => {
+  try {
+    // get params from request
+    const { clientId, code, codeVerifier } = req.body;
 
-  // console.log("\nSession data before saving token: ", req.session);
-  // // //verify paramters
-  // console.log("\nIncoming request:", { clientId, code, codeVerifier });
+    // return error if parameters are missing
+    if (!clientId || !code || !codeVerifier) {
+      return res
+        .status(400)
+        .send("Error: missing parameters from getSpotifyAccessToken request");
+    }
 
-  if (!clientId || !code || !codeVerifier) {
-    return res.status(400).json({ error: "Missing required parameters" });
-  }
+    // create parameters to send
+    const params = new URLSearchParams();
+    params.append("client_id", clientId);
+    params.append("grant_type", "authorization_code");
+    params.append("code", code);
+    params.append(
+      "redirect_uri",
+      "http://localhost:5173/auth/spotify/callback"
+    );
+    params.append("code_verifier", codeVerifier);
 
-  const params = new URLSearchParams();
-  params.append("client_id", clientId);
-  params.append("grant_type", "authorization_code");
-  params.append("code", code);
-  params.append("redirect_uri", "http://localhost:5173/auth/spotify/callback");
-  params.append("code_verifier", codeVerifier);
-
-  //log payload sent to spotify
-  // console.log("\nParams sent to Spotify API:", params.toString());
-
-  //fetch the spotify api token
-  const response = await fetch("https://accounts.spotify.com/api/token", {
-    method: "POST",
-    headers: { "Content-Type": "application/x-www-form-urlencoded" },
-    body: params,
-  });
-
-  //error handling
-  if (!response.ok) {
-    const errorDetails = await response.json();
-    console.error("Spotify token exchange failed:", errorDetails);
-    return res.status(response.status).json(errorDetails);
-  }
-  const tokenData = await response.json();
-
-  //check for successful fetch
-  if (tokenData.access_token) {
-    //set the sessions access token to the one received from spotify
-    req.session.accessToken = tokenData.access_token;
-
-    //save the session so that the access token in the session can be used for fetching spotify profile
-    req.session.save((err) => {
-      if (err) {
-        console.error("Error saving session:", err);
-        return res.status(500).json({ error: "Failed to save session" });
+    // fetch spotify api token
+    const tokenResponse = await fetch(
+      "https://accounts.spotify.com/api/token",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: params,
       }
-      // console.log("\nResponse: ", res.body);
-      // console.log("\nExchange token route");
-      // console.log("\nSession ID:", req.sessionID);
-      // console.log("\nSession saved: ", req.session);
+    );
 
-      res.json({ success: true });
-    });
-  } else {
-    res.status(400).json({ error: "Failed to exchange token" });
+    // return error if fetch to spotify failed
+    if (!tokenResponse.ok) {
+      const errorDetails = await tokenResponse.json();
+      console.error("Error with Spotify token exchange: ", errorDetails);
+      return res.status(tokenResponse.status).json(errorDetails);
+    }
+
+    const tokenData = await tokenResponse.json();
+
+    // check for successful fetch
+    if (tokenData.access_token) {
+      // set access token to session
+      req.session.accessToken = tokenData.access_token;
+
+      // save session
+      req.session.save((err) => {
+        // display error if save failed
+        if (err) {
+          return res.status(500).send("Error saving session");
+        }
+
+        res.status(200).send("Successfully saved session");
+      });
+    } else {
+      res.status(400).send("Error: no token in token response");
+    }
+  } catch (err) {
+    res.status(500).send("Error getting access token: " + err.message);
   }
 };
 
-//fetch the spotify profile using the spotify access token stored in session
+// fetch spotify profile
 const getSpotifyProfile = async (req, res) => {
-  // console.log(
-  //   "\nSession data before making api request to spotify for profile, look for token:",
-  //   req.session
-  // );
-  // console.log("\nProfile Route");
-  // console.log("Session ID:", req.sessionID);
-  // console.log(req.session);
+  try {
+    // get access token from session
+    const accessToken = req.session.accessToken;
 
-  // Retrieve access token from session
-  const accessToken = req.session.accessToken;
+    // return error if access token not found
+    if (!accessToken) {
+      return res.status(401).send("Error: access token not found in session");
+    }
 
-  //check for an access token
-  if (!accessToken) {
+    // fetch spotify profile
+    const profileResponse = await fetch("https://api.spotify.com/v1/me", {
+      method: "GET",
+      headers: { Authorization: `Bearer ${accessToken}` },
+    });
+
+    // // log spotify profile response
+    // console.log("Spotify profile response:", profileResponse);
+
+    // return error if response unsuccessful
+    if (!profileResponse.ok) {
+      return res
+        .status(profileResponse.status)
+        .send("Error: failed to fetch spotify profile");
+    }
+
+    const profileData = await profileResponse.json();
+    res.json(profileData);
+  } catch (err) {
+    res.status(500).send("Error fetching spotify profile");
     return res
-      .status(401)
-      .json({ error: "Unauthorized: No access token in session" });
+      .status(500)
+      .send("Error fetching spotify profile: " + err.message);
   }
-
-  //get spotify profile using access token
-  const result = await fetch("https://api.spotify.com/v1/me", {
-    method: "GET",
-    headers: { Authorization: `Bearer ${accessToken}` },
-  });
-
-  //if result didnt return an ok status, send an error response
-  if (!result.ok) {
-    return res.status(result.status).json({ error: "Failed to fetch profile" });
-  }
-
-  //send the spotify profile to frontend
-  const profileData = await result.json();
-  res.json(profileData);
 };
 
+// get google profile
 const getGoogleProfile = (req, res) => {
   try {
+    // return error if no user found in session
     if (!req.user) {
-      console.log("User is not authenticated");
-      throw new Error("User is not authenticated");
+      return res.status(401).send("Error: google user not found");
     }
+
     res.status(200).json(req.user);
   } catch (error) {
-    console.log("Error in /profile/google:", error);
-    console.error("Error in /profile/google:", error);
-    res.status(500).json({ error: error.message });
+    res.status(500).send("Error sending Google proifle: " + err.message);
+    return res.status(500).send("Error sending Google profile: " + err.message);
   }
 };
 
-//authenticate through google: retreiving users profile and email, then go to callback URL
+// authenticate through google then go to callback URL
 const googleAuth = passport.authenticate("google", {
   scope: ["profile", "email"],
 });
 
-//callback URL, if authorization failed redirect to homepage, else go to profile URL
+// redirect to frontend on successful authentication
 const googleCallback = [
+  // go to homepage on failed authentication
   passport.authenticate("google", { failureRedirect: "/" }),
   (req, res) => {
-    // res.redirect("/profile/google");
-    //redirect to frontend
     res.redirect("http://localhost:5173/auth/google/callback");
   },
 ];
 
+// redirect to homepage
 const logout = (req, res) => {
-  // if the request is to logout, redirect to homepage
   req.logOut(() => {
     res.redirect("/");
   });
 };
 
+// export methods
 module.exports = {
-  getAccessToken,
+  getSpotifyAccessToken,
   getSpotifyProfile,
   googleAuth,
   googleCallback,

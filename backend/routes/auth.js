@@ -26,10 +26,12 @@ passport.use(
 
 //session management, saving user data inside session:
 passport.serializeUser((user, done) => done(null, user));
+
 //retrieving user data when needed
 passport.deserializeUser((user, done) => done(null, user));
 
-router.post("/spotify/exchange-token", authController.getAccessToken);
+// define routes
+router.post("/spotify/exchange-token", authController.getSpotifyAccessToken);
 router.get("/spotify/profile", authController.getSpotifyProfile);
 router.get("/google/profile", authController.getGoogleProfile);
 router.get("/google", authController.googleAuth);

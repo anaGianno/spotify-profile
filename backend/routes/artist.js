@@ -2,8 +2,9 @@ const express = require("express");
 const router = express.Router();
 const artistController = require("../controllers/artistController");
 
+// define routes
 router.get("/", artistController.getAllArtists);
-router.put("/", artistController.addArtist);
+router.post("/", artistController.addArtist);
 router.delete("/:id", artistController.deleteArtist);
 
 module.exports = router;

@@ -1,34 +1,33 @@
-//load environment variables
+// load environment variables
 require("dotenv").config();
 
-//initialize server
+// initialize server
 const express = require("express");
 const app = express();
 
-//server middleware setup: allow server/client to communicate with eachother
+// server middleware setup: allow server/client to communicate with eachother
 const cors = require("cors");
 app.use(
   cors({
     origin: "http://localhost:5173",
     methods: "GET, POST",
-    credentials: true, // Allow cookies to be sent
+    credentials: true,
   })
 );
-//give server access to get json data from request body
+// give server access to get json data from request body
 app.use(express.json());
 
-//session middleware for authentication
+// session middleware for authentication
 const session = require("express-session");
 app.use(
   session({
     secret: "secret",
-    //avoid resaving sessions if nothing has changed
     resave: true,
     saveUninitialized: true,
     cookie: {
       httpOnly: true,
-      secure: false, // Use false for development only
-      sameSite: "Lax", // Fallback to Lax for local testing
+      secure: false,
+      sameSite: "Lax",
       maxAge: 24 * 60 * 60 * 1000,
     },
   })
@@ -47,6 +46,7 @@ const spotifyRoute = require("./routes/spotify");
 const trackRoute = require("./routes/track");
 const userRoute = require("./routes/user");
 
+// set path for each route
 app.use("/album", albumRoute);
 app.use("/artist", artistRoute);
 app.use("/auth", authRoute);
