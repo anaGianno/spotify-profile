@@ -1,6 +1,8 @@
 import { useParams } from "react-router-dom";
-import ProfilePicture from "../components/ProfilePicture";
 import { useState, useEffect } from "react";
+
+import ProfilePicture from "../components/ProfilePicture";
+import Searchbar from "../components/Searchbar";
 
 function Profile() {
   // initialize image and username in null state
@@ -65,6 +67,8 @@ function Profile() {
 
       {/* display username if available */}
       {user_name ? <div>{user_name}</div> : <div>No user_name available</div>}
+
+      <Searchbar />
     </>
   );
 }

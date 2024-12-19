@@ -47,7 +47,7 @@ const searchSpotify = async (req, res) => {
     // return error if query unsuccessful
     if (!searchReponse.ok) {
       return res
-        .status(result.status)
+        .status(searchReponse.status)
         .send("Error: failed to fetch spotify profile");
     }
 
@@ -55,7 +55,7 @@ const searchSpotify = async (req, res) => {
     res.json(data);
   } catch (error) {
     console.error("Spotify API search error: ", error.message);
-    return res.status(500).send("Spotify API search error: " + err.message);
+    return res.status(500).send("Spotify API search error: " + error.message);
   }
 };
 

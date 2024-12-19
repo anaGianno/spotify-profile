@@ -2,6 +2,8 @@
 import { createRoot } from "react-dom/client";
 import App from "./App.tsx";
 import "bootstrap/dist/css/bootstrap.css";
+import "bootstrap/dist/css/bootstrap.css"; // Bootstrap CSS
+import "bootstrap/dist/js/bootstrap.bundle.min.js"; // Bootstrap JS bundle (includes Popper.js)
 
 // import router and pages
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
