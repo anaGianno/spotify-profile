@@ -15,12 +15,18 @@ const getAllTracks = async (req, res) => {
 const addTrack = async (req, res) => {
   try {
     // get parameters from request
-    const { track_id, track_name, artist_name, image_url, track_user_id } =
-      req.body;
+    const {
+      track_id,
+      track_name,
+      artist_name,
+      duration,
+      image_url,
+      track_user_id,
+    } = req.body;
 
-    // convert duration parameter
-    var { duration } = req.body;
-    duration = millisToMinutesAndSeconds(duration);
+    // // convert duration parameter
+    // var { duration } = req.body;
+    // duration = millisToMinutesAndSeconds(duration);
 
     // add track
     const trackResponse = await database.query(
@@ -63,12 +69,12 @@ const deleteTrack = async (req, res) => {
   }
 };
 
-// convert duration from track parameters from milliseconds to minutes and seconds
-function millisToMinutesAndSeconds(millis) {
-  var minutes = Math.floor(millis / 60000);
-  var seconds = ((millis % 60000) / 1000).toFixed(0);
-  return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
-}
+// // convert duration from track parameters from milliseconds to minutes and seconds
+// function millisToMinutesAndSeconds(millis) {
+//   var minutes = Math.floor(millis / 60000);
+//   var seconds = ((millis % 60000) / 1000).toFixed(0);
+//   return minutes + ":" + (seconds < 10 ? "0" : "") + seconds;
+// }
 
 // export methods
 module.exports = {
