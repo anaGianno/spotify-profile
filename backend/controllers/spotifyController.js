@@ -59,7 +59,7 @@ const searchSpotify = async (req, res) => {
       data.artists.items.forEach((artist) => {
         const artistId = artist.id;
         const artistName = artist.name || "Unknown Artist"; // get the first artist's name
-        const imageUrl = artist.images[2]?.url || "No Image Available"; // get the third image URL
+        const imageUrl = artist.images[0]?.url || "No Image Available"; // get the third image URL
         // combine the data into an object and add it to the formattedResponse array
         formattedResponse.push({
           artistId,
