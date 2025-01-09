@@ -4,6 +4,7 @@ import defaultImage from "../assets/defaultPicture.png";
 const Searchbar = () => {
   let categories = ["track", "artist", "album"];
   const [selectedCategory, setselectedCategory] = useState("track");
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [query, setQuery] = useState("");
 
   const [searchResults, setSearchResults] = useState<
@@ -15,6 +16,8 @@ const Searchbar = () => {
   };
 
   const onSearch = async () => {
+    setIsDropdownOpen((prev) => !prev);
+
     console.log("Query:", query);
     console.log("Category:", selectedCategory);
 
@@ -170,7 +173,18 @@ const Searchbar = () => {
           </ul>
         </div>
 
-        <form className="d-flex" role="search">
+        <form className="d-flex position-relative" role="search">
+          <button
+            className="btn btn-outline-success"
+            type="button"
+            onClick={onSearch}
+            // data-bs-toggle="collapse"
+            // data-bs-target="#collapseExample"
+            aria-expanded={isDropdownOpen}
+            aria-controls="collapseExample"
+          >
+            Search
+          </button>
           <input
             className="form-control me-2"
             type="search"
@@ -178,136 +192,121 @@ const Searchbar = () => {
             aria-label="Search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            style={{
+              width: "436.3px",
+            }}
           />
-          <button
-            className="btn btn-outline-success"
-            type="button"
-            onClick={onSearch}
-            data-bs-toggle="collapse"
-            data-bs-target="#collapseExample"
-            aria-expanded="false"
-            aria-controls="collapseExample"
+          <div
+            className={`collapse ${isDropdownOpen ? "show" : ""}`}
+            id="collapseExample"
+            style={{
+              position: "absolute",
+              top: "100%",
+              left: "73px",
+              zIndex: 1000,
+            }}
           >
-            Search
-          </button>
-        </form>
-
-        <div className="collapse" id="collapseExample">
-          <div className="list-group">
-            {searchResults.map((result) => {
-              if ("artistId" in result) {
-                return (
-                  <a
-                    key={result.artistId}
-                    href="#"
-                    className="list-group-item list-group-item-action d-flex align-items-center"
-                  >
-                    <img
-                      src={result.imageUrl || defaultImage}
+            <div className="list-group">
+              {searchResults.map((result) => {
+                if ("artistId" in result) {
+                  return (
+                    <a
+                      key={result.artistId}
+                      href="#"
+                      className="list-group-item list-group-item-action d-flex align-items-center"
                       style={{
-                        width: "50px",
-                        height: "50px",
-                        objectFit: "cover",
-                        borderRadius: "50%",
-                      }}
-                    />
-                    <span
-                      className="badge"
-                      style={{
-                        paddingRight: "200px",
+                        width: "436.3px",
                       }}
                     >
-                      {result.artistName}
-                    </span>
-                  </a>
-                );
-              }
-              {
-                /* interface Artist {
-  artistId: string;
-  artistName: string;
-  imageUrl: string;
-}
-
-interface Track {
-  trackId: string;
-  trackName: string;
-  artistName: string;
-  duration: string;
-  imageUrl: string;
-}
-
-interface Album {
-  albumId: string;
-  albumName: string;
-  albumReleaseDate: string;
-  totalTracks: string;
-  imageUrl: string;
-  artistName: string;
-} */
-              }
-              // Check if the result is an Album
-              if ("albumId" in result) {
-                return (
-                  <a
-                    key={result.albumId}
-                    href="#"
-                    className="list-group-item list-group-item-action d-flex align-items-center"
-                  >
-                    <img
-                      src={result.imageUrl || defaultImage}
+                      <img
+                        src={result.imageUrl || defaultImage}
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          objectFit: "cover",
+                          borderRadius: "50%",
+                        }}
+                      />
+                      <span
+                        className="badge"
+                        style={{
+                          paddingRight: "200px",
+                        }}
+                      >
+                        {result.artistName}
+                      </span>
+                    </a>
+                  );
+                }
+                // Check if the result is an Album
+                if ("albumId" in result) {
+                  return (
+                    <a
+                      key={result.albumId}
+                      href="#"
+                      className="list-group-item list-group-item-action d-flex align-items-center"
                       style={{
-                        width: "50px",
-                        height: "50px",
-                        objectFit: "cover",
-                        borderRadius: "50%",
-                      }}
-                    />
-                    <span
-                      className="badge"
-                      style={{
-                        paddingRight: "200px",
+                        width: "436.3px",
                       }}
                     >
-                      {result.albumName}
-                    </span>
-                  </a>
-                );
-              }
+                      <img
+                        src={result.imageUrl || defaultImage}
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          objectFit: "cover",
+                          borderRadius: "50%",
+                        }}
+                      />
+                      <span
+                        className="badge"
+                        style={{
+                          paddingRight: "200px",
+                        }}
+                      >
+                        {result.albumName}
+                      </span>
+                    </a>
+                  );
+                }
 
-              // Check if the result is a Track
-              if ("trackId" in result) {
-                return (
-                  <a
-                    key={result.trackId}
-                    href="#"
-                    className="list-group-item list-group-item-action d-flex align-items-center"
-                  >
-                    <img
-                      src={result.imageUrl || defaultImage}
+                // Check if the result is a Track
+                if ("trackId" in result) {
+                  return (
+                    <a
+                      key={result.trackId}
+                      href="#"
+                      className="list-group-item list-group-item-action d-flex align-items-center"
                       style={{
-                        width: "50px",
-                        height: "50px",
-                        objectFit: "cover",
-                        borderRadius: "50%",
-                      }}
-                    />
-                    <span
-                      className="badge"
-                      style={{
-                        paddingRight: "200px",
+                        width: "436.3px",
                       }}
                     >
-                      {result.trackName}
-                    </span>
-                  </a>
-                );
-              }
+                      <img
+                        src={result.imageUrl || defaultImage}
+                        style={{
+                          width: "50px",
+                          height: "50px",
+                          objectFit: "cover",
+                          borderRadius: "50%",
+                        }}
+                      />
+                      <span
+                        className="badge"
+                        style={{
+                          paddingRight: "200px",
+                        }}
+                      >
+                        {result.trackName}
+                      </span>
+                    </a>
+                  );
+                }
 
-              return null; // Return nothing if the result doesn't match any type
-            })}
+                return null; // Return nothing if the result doesn't match any type
+              })}
+            </div>
           </div>
-        </div>
+        </form>
       </div>
     </nav>
   );
