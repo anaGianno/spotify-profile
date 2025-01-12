@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 interface Props {
   children: string;
   route: string;
-  color?: "success" | "light" | "primary";
+  color?: "success" | "light" | "primary" | "dark";
 }
 
 const OauthButton = ({ route, children, color = "primary" }: Props) => {
