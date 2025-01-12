@@ -1,7 +1,15 @@
 import OauthButton from "./components/OauthButton";
 import "./style.css";
+import { useEffect } from "react";
 
 function App() {
+  useEffect(() => {
+    document.body.className = "log-in";
+    return () => {
+      document.body.className = ""; // Clean up when the component unmounts
+    };
+  }, []);
+
   return (
     <>
       <div className="log-in-parent">

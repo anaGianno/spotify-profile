@@ -45,6 +45,11 @@ function Profile() {
         // set state of image and username to user data
         setImage_url(userData.image_url);
         setUser_name(userData.user_name);
+
+        document.body.className = "profile";
+        return () => {
+          document.body.className = ""; // Clean up when the component unmounts
+        };
       } catch (error) {
         console.error("Error in profile callback: ", error);
       }
@@ -56,19 +61,21 @@ function Profile() {
   return (
     // display profile
     <>
-      <div>Profile {params.profileId}</div>
+      <div className="profile-parent">
+        <p>Profile {params.profileId}</p>
 
-      {/* display image if available */}
-      {image_url ? (
-        <ProfilePicture src={image_url} />
-      ) : (
-        <div>No image available</div>
-      )}
+        {/* display image if available */}
+        {image_url ? (
+          <ProfilePicture src={image_url} />
+        ) : (
+          <div>No image available</div>
+        )}
 
-      {/* display username if available */}
-      {user_name ? <div>{user_name}</div> : <div>No user_name available</div>}
+        {/* display username if available */}
+        {user_name ? <p>{user_name}</p> : <p>No user_name available</p>}
 
-      <Searchbar />
+        <Searchbar />
+      </div>
     </>
   );
 }

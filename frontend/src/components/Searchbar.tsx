@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import defaultImage from "../assets/defaultPicture.png";
 
 const Searchbar = () => {
@@ -135,15 +135,36 @@ const Searchbar = () => {
     setSearchResults(searchResult);
   };
 
+  // const searchBarRef = useRef(null);
+
+  // // Close the dropdown when clicking outside
+  // useEffect(() => {
+  //   const handleClickOutside = (event: MouseEvent) => {
+  //     if (
+  //       searchBarRef.current &&
+  //       !(searchBarRef.current as HTMLElement).contains(event.target as Node)
+  //     ) {
+  //       setIsDropdownOpen(false);
+  //     }
+  //   };
+
+  //   document.addEventListener("mousedown", handleClickOutside);
+  //   return () => {
+  //     document.removeEventListener("mousedown", handleClickOutside);
+  //   };
+  // }, []);
   return (
     <nav
-      className="navbar bg-dark border-bottom border-body"
+      className="navbar bg-dark border-body"
       data-bs-theme="dark"
+      style={{
+        borderRadius: "5px",
+      }}
     >
       <div className="container-fluid d-flex justify-content-start">
         <div className="dropdown me-2">
           <button
-            className="btn btn-secondary dropdown-toggle"
+            className="btn btn-success dropdown-toggle"
             type="button"
             data-bs-toggle="dropdown"
             aria-expanded="false"
@@ -192,6 +213,7 @@ const Searchbar = () => {
             aria-label="Search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
+            // onFocus={() => setIsDropdownOpen(true)} // Open dropdown on focus
             style={{
               width: "436.3px",
             }}
