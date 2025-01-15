@@ -4,9 +4,14 @@ import { useEffect } from "react";
 
 function App() {
   useEffect(() => {
-    document.body.className = "log-in";
+    const rootElement = document.getElementById("root");
+    if (rootElement) {
+      rootElement.className = "root log-in"; // Set the className for the root div
+    }
     return () => {
-      document.body.className = ""; // Clean up when the component unmounts
+      if (rootElement) {
+        rootElement.className = ""; // Clean up on unmount
+      }
     };
   }, []);
 

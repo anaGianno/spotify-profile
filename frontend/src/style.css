@@ -1,16 +1,25 @@
-.root {
-  height: 100%;
-  width: 100%;
-}
-
 body {
   background-image: linear-gradient(rgb(19, 60, 51), rgb(0, 15, 15));
   display: flex;
   height: 100vh; /* Full viewport height */
   margin: 0;
+  /* justify-content: center;
+  align-items: center; */
 }
 
-body.log-in {
+/* body.log-in {
+  justify-content: center;
+  align-items: center;
+} */
+
+.root {
+  height: 100%;
+  width: 100%;
+}
+
+.log-in {
+  /* background-color: #f0f0f0; */
+  display: flex;
   justify-content: center;
   align-items: center;
 }
@@ -53,4 +62,10 @@ p {
   margin-right: 20%;
   margin-top: 2.5%;
   margin-bottom: 2.5%;
+}
+
+.searchbar {
+  background-color: rgb(0, 15, 15, 0.5);
+  border: 1px solid rgb(0, 243, 143, 0.25);
+  border-radius: 5px;
 }

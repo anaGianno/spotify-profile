@@ -15,9 +15,14 @@ const Searchbar = () => {
     setselectedCategory(category);
   };
 
-  const onSearch = async () => {
-    setIsDropdownOpen((prev) => !prev);
+  const handleSearchClick = () => {
+    // If the dropdown is not open, open it
+    setIsDropdownOpen(true);
 
+    onSearch(); // Perform the search action
+  };
+
+  const onSearch = async () => {
     console.log("Query:", query);
     console.log("Category:", selectedCategory);
 
@@ -135,32 +140,25 @@ const Searchbar = () => {
     setSearchResults(searchResult);
   };
 
-  // const searchBarRef = useRef(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false); // Close the dropdown
+      }
+    };
 
-  // // Close the dropdown when clicking outside
-  // useEffect(() => {
-  //   const handleClickOutside = (event: MouseEvent) => {
-  //     if (
-  //       searchBarRef.current &&
-  //       !(searchBarRef.current as HTMLElement).contains(event.target as Node)
-  //     ) {
-  //       setIsDropdownOpen(false);
-  //     }
-  //   };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
-  //   document.addEventListener("mousedown", handleClickOutside);
-  //   return () => {
-  //     document.removeEventListener("mousedown", handleClickOutside);
-  //   };
-  // }, []);
   return (
-    <nav
-      className="navbar bg-dark border-body"
-      data-bs-theme="dark"
-      style={{
-        borderRadius: "5px",
-      }}
-    >
+    <nav className="navbar searchbar" data-bs-theme="dark">
       <div className="container-fluid d-flex justify-content-start">
         <div className="dropdown me-2">
           <button
@@ -194,141 +192,162 @@ const Searchbar = () => {
           </ul>
         </div>
 
-        <form className="d-flex position-relative" role="search">
-          <button
-            className="btn btn-outline-success"
-            type="button"
-            onClick={onSearch}
-            // data-bs-toggle="collapse"
-            // data-bs-target="#collapseExample"
-            aria-expanded={isDropdownOpen}
-            aria-controls="collapseExample"
-          >
-            Search
-          </button>
-          <input
-            className="form-control me-2"
-            type="search"
-            placeholder="Search"
-            aria-label="Search"
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            // onFocus={() => setIsDropdownOpen(true)} // Open dropdown on focus
-            style={{
-              width: "436.3px",
-            }}
-          />
-          <div
-            className={`collapse ${isDropdownOpen ? "show" : ""}`}
-            id="collapseExample"
-            style={{
-              position: "absolute",
-              top: "100%",
-              left: "73px",
-              zIndex: 1000,
+        <div ref={dropdownRef}>
+          <form
+            className="d-flex position-relative"
+            role="search"
+            onSubmit={(e) => {
+              e.preventDefault(); // Prevent page refresh
+              onSearch(); // Trigger the search function
             }}
           >
-            <div className="list-group">
-              {searchResults.map((result) => {
-                if ("artistId" in result) {
-                  return (
-                    <a
-                      key={result.artistId}
-                      href="#"
-                      className="list-group-item list-group-item-action d-flex align-items-center"
-                      style={{
-                        width: "436.3px",
-                      }}
-                    >
-                      <img
-                        src={result.imageUrl || defaultImage}
+            <button
+              className="btn btn-outline-success"
+              type="button"
+              onClick={handleSearchClick}
+              // data-bs-toggle="collapse"
+              data-bs-target="#collapseExample"
+              aria-expanded={isDropdownOpen}
+              // aria-expanded="false"
+              aria-controls="collapseExample"
+            >
+              Search
+            </button>
+            <input
+              className="form-control me-2"
+              type="search"
+              placeholder="Search"
+              aria-label="Search"
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onFocus={() => {
+                if (searchResults.length > 0) {
+                  setIsDropdownOpen(true); // Only open if there are results
+                }
+              }}
+              style={{
+                width: "436.3px",
+                marginLeft: "8px",
+              }}
+            />
+            <div
+              className={`collapse ${isDropdownOpen ? "show" : ""}`}
+              // className="collapse"
+              id="collapseExample"
+              style={{
+                position: "absolute",
+                top: "100%",
+                left: "81px",
+                zIndex: 1000,
+              }}
+              onTransitionEnd={() => {
+                // Sync state with Bootstrap's collapse behavior
+                const element = document.getElementById("collapseExample");
+                setIsDropdownOpen(element?.classList.contains("show") || false);
+              }}
+            >
+              <div className="list-group">
+                {searchResults.map((result) => {
+                  if ("artistId" in result) {
+                    return (
+                      <a
+                        key={result.artistId}
+                        href="#"
+                        className="list-group-item list-group-item-action d-flex align-items-center"
                         style={{
-                          width: "50px",
-                          height: "50px",
-                          objectFit: "cover",
-                          borderRadius: "50%",
-                        }}
-                      />
-                      <span
-                        className="badge"
-                        style={{
-                          paddingRight: "200px",
+                          width: "436.3px",
                         }}
                       >
-                        {result.artistName}
-                      </span>
-                    </a>
-                  );
-                }
-                // Check if the result is an Album
-                if ("albumId" in result) {
-                  return (
-                    <a
-                      key={result.albumId}
-                      href="#"
-                      className="list-group-item list-group-item-action d-flex align-items-center"
-                      style={{
-                        width: "436.3px",
-                      }}
-                    >
-                      <img
-                        src={result.imageUrl || defaultImage}
+                        <img
+                          src={result.imageUrl || defaultImage}
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            objectFit: "cover",
+                            borderRadius: "50%",
+                          }}
+                        />
+                        <span
+                          className="badge"
+                          style={{
+                            paddingRight: "200px",
+                          }}
+                        >
+                          {result.artistName}
+                        </span>
+                      </a>
+                    );
+                  }
+                  // Check if the result is an Album
+                  if ("albumId" in result) {
+                    return (
+                      <a
+                        key={result.albumId}
+                        href="#"
+                        className="list-group-item list-group-item-action d-flex align-items-center"
                         style={{
-                          width: "50px",
-                          height: "50px",
-                          objectFit: "cover",
-                          borderRadius: "50%",
-                        }}
-                      />
-                      <span
-                        className="badge"
-                        style={{
-                          paddingRight: "200px",
+                          width: "436.3px",
                         }}
                       >
-                        {result.albumName}
-                      </span>
-                    </a>
-                  );
-                }
+                        <img
+                          src={result.imageUrl || defaultImage}
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            objectFit: "cover",
+                            borderRadius: "50%",
+                          }}
+                        />
+                        <span
+                          className="badge"
+                          style={{
+                            paddingRight: "200px",
+                          }}
+                        >
+                          {result.albumName}
+                        </span>
+                      </a>
+                    );
+                  }
 
-                // Check if the result is a Track
-                if ("trackId" in result) {
-                  return (
-                    <a
-                      key={result.trackId}
-                      href="#"
-                      className="list-group-item list-group-item-action d-flex align-items-center"
-                      style={{
-                        width: "436.3px",
-                      }}
-                    >
-                      <img
-                        src={result.imageUrl || defaultImage}
+                  // Check if the result is a Track
+                  if ("trackId" in result) {
+                    return (
+                      <a
+                        key={result.trackId}
+                        href="#"
+                        className="list-group-item list-group-item-action d-flex align-items-center"
                         style={{
-                          width: "50px",
-                          height: "50px",
-                          objectFit: "cover",
-                          borderRadius: "50%",
-                        }}
-                      />
-                      <span
-                        className="badge"
-                        style={{
-                          paddingRight: "200px",
+                          width: "436.3px",
                         }}
                       >
-                        {result.trackName}
-                      </span>
-                    </a>
-                  );
-                }
+                        <img
+                          src={result.imageUrl || defaultImage}
+                          style={{
+                            width: "50px",
+                            height: "50px",
+                            objectFit: "cover",
+                            borderRadius: "50%",
+                          }}
+                        />
+                        <span
+                          className="badge"
+                          style={{
+                            paddingRight: "200px",
+                          }}
+                        >
+                          {result.trackName}
+                        </span>
+                      </a>
+                    );
+                  }
 
-                return null; // Return nothing if the result doesn't match any type
-              })}
+                  return null; // Return nothing if the result doesn't match any type
+                })}
+              </div>
             </div>
-          </div>
-        </form>
+          </form>
+        </div>
       </div>
     </nav>
   );
