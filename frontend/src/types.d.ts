@@ -24,26 +24,26 @@ interface Image {
 }
 
 interface Artist {
-  artistId: string;
-  artistName: string;
-  imageUrl: string;
+  artist_id: string;
+  artist_name: string;
+  image_url: string;
 }
 
 interface Track {
-  trackId: string;
-  trackName: string;
-  artistName: string;
+  track_id: string;
+  track_name: string;
+  artist_name: string;
   duration: string;
-  imageUrl: string;
+  image_url: string;
 }
 
 interface Album {
-  albumId: string;
-  albumName: string;
-  albumReleaseDate: string;
-  totalTracks: string;
-  imageUrl: string;
-  artistName: string;
+  album_id: string;
+  album_name: string;
+  album_release_date: string;
+  total_tracks: string;
+  image_url: string;
+  artist_name: string;
 }
 
 // CREATE TABLE track(

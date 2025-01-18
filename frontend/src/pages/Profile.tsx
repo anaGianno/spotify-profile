@@ -61,36 +61,6 @@ function Profile() {
   return (
     // display profile
     <>
-      {/* <p className="d-inline-flex gap-1">
-        <a
-          className="btn btn-primary"
-          data-bs-toggle="collapse"
-          href="#collapseExample"
-          role="button"
-          aria-expanded="false"
-          aria-controls="collapseExample"
-        >
-          Link with href
-        </a>
-        <button
-          className="btn btn-primary"
-          type="button"
-          data-bs-toggle="collapse"
-          data-bs-target="#collapseExample"
-          aria-expanded="false"
-          aria-controls="collapseExample"
-        >
-          Button with data-bs-target
-        </button>
-      </p>
-      <div className="collapse" id="collapseExample">
-        <div className="card card-body">
-          Some placeholder content for the collapse component. This panel is
-          hidden by default but revealed when the user activates the relevant
-          trigger.
-        </div>
-      </div> */}
-
       <div className="profile-parent">
         <p>Profile {params.profileId}</p>
 
@@ -105,6 +75,61 @@ function Profile() {
         {user_name ? <p>{user_name}</p> : <p>No user_name available</p>}
 
         <Searchbar />
+
+        <div className="list-group">
+          {/* <a
+            key={result.artistId}
+            href="#"
+            className="list-group-item list-group-item-action d-flex align-items-center"
+            style={{
+              width: "436.3px",
+            }}
+          >
+            <img
+              src={result.imageUrl || defaultImage}
+              style={{
+                width: "50px",
+                height: "50px",
+                objectFit: "cover",
+                borderRadius: "50%",
+              }}
+            />
+            <span
+              className="badge"
+              style={{
+                paddingRight: "200px",
+              }}
+            >
+              {result.artistName}
+            </span>
+          </a> */}
+
+          {/* <a
+            href="#"
+            className="list-group-item list-group-item-action d-flex align-items-center"
+            style={{
+              width: "436.3px",
+            }}
+          >
+            <img
+              src={result.imageUrl || defaultImage}
+              style={{
+                width: "50px",
+                height: "50px",
+                objectFit: "cover",
+                borderRadius: "50%",
+              }}
+            />
+            <span
+              className="badge"
+              style={{
+                paddingRight: "200px",
+              }}
+            >
+              {result.artistName}
+            </span>
+          </a> */}
+        </div>
       </div>
     </>
   );

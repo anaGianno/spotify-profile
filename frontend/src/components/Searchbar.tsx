@@ -1,31 +1,28 @@
 import { useState, useRef, useEffect } from "react";
+import { useParams } from "react-router-dom";
 import defaultImage from "../assets/defaultPicture.png";
 
 const Searchbar = () => {
   let categories = ["track", "artist", "album"];
+  // set default category to track
   const [selectedCategory, setselectedCategory] = useState("track");
+  // set dropdown default to closed
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  // set deafult search query as empty
   const [query, setQuery] = useState("");
 
+  // set default search results as empty
   const [searchResults, setSearchResults] = useState<
     (Artist | Album | Track)[]
   >([]);
 
-  const onSelectCategory = (category: string) => {
-    setselectedCategory(category);
-  };
-
-  const handleSearchClick = () => {
-    // If the dropdown is not open, open it
-    setIsDropdownOpen(true);
-
-    onSearch(); // Perform the search action
-  };
-
   const onSearch = async () => {
+    // open dropdown when search button is clicked
+    setIsDropdownOpen(true);
     console.log("Query:", query);
     console.log("Category:", selectedCategory);
 
+    // fetch spotify response using query and category
     const searchResponse = await fetch(
       `http://localhost:3000/spotify/search?query=${encodeURIComponent(
         query
@@ -35,6 +32,7 @@ const Searchbar = () => {
       }
     );
 
+    // log error on failed fetch
     if (!searchResponse.ok) {
       const status = searchResponse.status;
       const statusText = searchResponse.statusText;
@@ -54,113 +52,149 @@ const Searchbar = () => {
 
     let searchResult: (Artist | Album | Track)[] = [];
 
+    // push artist data to search result array
     if (selectedCategory === "artist") {
       searchData.forEach((artist: Artist) => {
-        const artistId = artist.artistId;
-        const artistName = artist.artistName || "Unknown Artist";
-        const imageUrl =
-          artist.imageUrl === "No Image Available" || !artist.imageUrl
+        const artist_id = artist.artist_id;
+        const artist_name = artist.artist_name || "Unknown Artist";
+        const image_url =
+          artist.image_url === "No Image Available" || !artist.image_url
             ? defaultImage
-            : artist.imageUrl;
+            : artist.image_url;
 
         console.log("Artist Details:");
-        console.log("ID:", artistId);
-        console.log("Name:", artistName);
-        console.log("Image URL:", imageUrl);
+        console.log("ID:", artist_id);
+        console.log("Name:", artist_name);
+        console.log("Image URL:", image_url);
         searchResult.push({
-          artistId,
-          artistName,
-          imageUrl,
+          artist_id,
+          artist_name,
+          image_url,
         });
       });
+      // push album data to search result array
     } else if (selectedCategory === "album") {
-      // interface Album {
-      //   albumId: string;
-      //   albumName: string;
-      //   albumReleaseDate: string;
-      //   totalTracks: string;
-      //   imageUrl: string;
-      //   artistName: string;
-      // }
       searchData.forEach((album: Album) => {
-        const albumId = album.albumId;
-        const albumName = album.albumName || "Unknown album";
-        const albumReleaseDate = album.albumReleaseDate;
-        const totalTracks = album.totalTracks;
-        const imageUrl = album.imageUrl || "No Image Available";
-        const artistName = album.artistName;
+        const album_id = album.album_id;
+        const album_name = album.album_name || "Unknown album";
+        const album_release_date = album.album_release_date;
+        const total_tracks = album.total_tracks;
+        const image_url = album.image_url || "No Image Available";
+        const artist_name = album.artist_name;
 
         console.log("Album Details:");
-        console.log("ID:", albumId);
-        console.log("Name:", albumName);
-        console.log("Release Date:", albumReleaseDate);
-        console.log("Total tracks:", totalTracks);
-        console.log("Image URL:", imageUrl);
-        console.log("Artist Name:", artistName);
+        console.log("ID:", album_id);
+        console.log("Name:", album_name);
+        console.log("Release Date:", album_release_date);
+        console.log("Total tracks:", total_tracks);
+        console.log("Image URL:", image_url);
+        console.log("Artist Name:", artist_name);
 
         searchResult.push({
-          albumId,
-          albumName,
-          albumReleaseDate,
-          totalTracks,
-          imageUrl,
-          artistName,
+          album_id,
+          album_name,
+          album_release_date,
+          total_tracks,
+          image_url,
+          artist_name,
         });
       });
+      // push track data to search result array
     } else if (selectedCategory === "track") {
-      // interface Track {
-      //   trackId: string;
-      //   trackName: string;
-      //   artistName: string;
-      //   duration: string;
-      //   imageUrl: string;
-      // }
       searchData.forEach((track: Track) => {
-        const trackId = track.trackId;
-        const trackName = track.trackName || "Unknown track";
-        const artistName = track.artistName;
+        const track_id = track.track_id;
+        const track_name = track.track_name || "Unknown track";
+        const artist_name = track.artist_name;
         const duration = track.duration;
-        const imageUrl = track.imageUrl || "No Image Available";
+        const image_url = track.image_url || "No Image Available";
 
         console.log("Track Details:");
-        console.log("ID:", trackId);
-        console.log("Name:", trackName);
-        console.log("Artist:", artistName);
+        console.log("ID:", track_id);
+        console.log("Name:", track_name);
+        console.log("Artist:", artist_name);
         console.log("Duration:", duration);
-        console.log("Image URL:", imageUrl);
+        console.log("Image URL:", image_url);
         searchResult.push({
-          trackId,
-          trackName,
-          artistName,
+          track_id,
+          track_name,
+          artist_name,
           duration,
-          imageUrl,
+          image_url,
         });
       });
     }
+    // set search result to array with pushed data
     setSearchResults(searchResult);
   };
 
+  // track the dropdown and the search button
   const dropdownRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        setIsDropdownOpen(false); // Close the dropdown
+        // close dropdown if clicked element is not a child of the dropdown
+        setIsDropdownOpen(false);
       }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
+      // remove listener when component unmounts
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Initialize profile ID from URL
+  const params = useParams<{ profileId: string }>();
+  const profile_id = params.profileId;
+
+  const selectItem = async (item: Artist | Album | Track, type: string) => {
+    console.log("Selected Item: ", item);
+    if (!profile_id) {
+      console.error("Profile ID is undefined");
+      return;
+    }
+
+    // Dynamically set the key name based on the type
+    const keyName = `${type}_user_id`; // This will be "artist_id", "album_id", or "track_id"
+
+    // Attach the dynamic key to the selected item
+    const itemWithProfile = { ...item, [keyName]: profile_id };
+
+    console.log("Item with profile: ", itemWithProfile);
+
+    try {
+      // Add user to database
+      const response = await fetch(
+        `http://localhost:3000/${encodeURIComponent(type)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify(itemWithProfile),
+        }
+      );
+
+      if (!response.ok) {
+        console.error(`Failed to add item: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      console.log("Server response: ", data);
+    } catch (error) {
+      console.error("Error adding item: ", error);
+    }
+  };
 
   return (
     <nav className="navbar searchbar" data-bs-theme="dark">
       <div className="container-fluid d-flex justify-content-start">
         <div className="dropdown me-2">
+          {/* category button */}
           <button
             className="btn btn-success dropdown-toggle"
             type="button"
@@ -170,6 +204,7 @@ const Searchbar = () => {
           >
             {selectedCategory}
           </button>
+          {/* category dropdown */}
           <ul className="dropdown-menu">
             {categories.map((category) => (
               <li key={category}>
@@ -182,7 +217,6 @@ const Searchbar = () => {
                   href="#"
                   onClick={() => {
                     setselectedCategory(category);
-                    onSelectCategory(category);
                   }}
                 >
                   {category}
@@ -192,27 +226,29 @@ const Searchbar = () => {
           </ul>
         </div>
 
+        {/* track the dropdown and the search button */}
         <div ref={dropdownRef}>
           <form
             className="d-flex position-relative"
             role="search"
             onSubmit={(e) => {
-              e.preventDefault(); // Prevent page refresh
-              onSearch(); // Trigger the search function
+              // prevent page refresh
+              e.preventDefault();
+              onSearch();
             }}
           >
+            {/* search button */}
             <button
               className="btn btn-outline-success"
               type="button"
-              onClick={handleSearchClick}
-              // data-bs-toggle="collapse"
+              onClick={onSearch}
               data-bs-target="#collapseExample"
               aria-expanded={isDropdownOpen}
-              // aria-expanded="false"
               aria-controls="collapseExample"
             >
               Search
             </button>
+            {/* searchbar */}
             <input
               className="form-control me-2"
               type="search"
@@ -222,7 +258,8 @@ const Searchbar = () => {
               onChange={(e) => setQuery(e.target.value)}
               onFocus={() => {
                 if (searchResults.length > 0) {
-                  setIsDropdownOpen(true); // Only open if there are results
+                  // only display dropdown if there are results
+                  setIsDropdownOpen(true);
                 }
               }}
               style={{
@@ -230,9 +267,10 @@ const Searchbar = () => {
                 marginLeft: "8px",
               }}
             />
+            {/* results collapse */}
             <div
+              // display results based on state
               className={`collapse ${isDropdownOpen ? "show" : ""}`}
-              // className="collapse"
               id="collapseExample"
               style={{
                 position: "absolute",
@@ -241,108 +279,227 @@ const Searchbar = () => {
                 zIndex: 1000,
               }}
               onTransitionEnd={() => {
-                // Sync state with Bootstrap's collapse behavior
+                // sync state with bootstrap's collapse behavior
                 const element = document.getElementById("collapseExample");
                 setIsDropdownOpen(element?.classList.contains("show") || false);
               }}
             >
               <div className="list-group">
+                {/* display all results */}
                 {searchResults.map((result) => {
-                  if ("artistId" in result) {
+                  if ("artist_id" in result) {
                     return (
-                      <a
-                        key={result.artistId}
-                        href="#"
-                        className="list-group-item list-group-item-action d-flex align-items-center"
+                      // <a
+                      //   key={result.artistId}
+                      //   href="#"
+                      //   className="list-group-item list-group-item-action d-flex align-items-center"
+                      //   style={{
+                      //     width: "436.3px",
+                      //   }}
+                      // >
+                      //   <img
+                      //     src={result.imageUrl || defaultImage}
+                      //     style={{
+                      //       width: "50px",
+                      //       height: "50px",
+                      //       objectFit: "cover",
+                      //       borderRadius: "50%",
+                      //     }}
+                      //   />
+                      //   <span
+                      //     className="badge"
+                      //     style={{
+                      //       paddingRight: "200px",
+                      //     }}
+                      //   >
+                      //     {result.artistName}
+                      //   </span>
+                      // </a>
+                      <li
+                        key={result.artist_id}
+                        className="list-group-item d-flex align-items-center"
                         style={{
                           width: "436.3px",
                         }}
                       >
-                        <img
-                          src={result.imageUrl || defaultImage}
+                        <div
+                          className="d-flex align-items-center flex-grow-1"
+                          style={{ overflow: "hidden" }}
+                        >
+                          <img
+                            src={result.image_url || defaultImage}
+                            alt="Artist"
+                            style={{
+                              width: "50px",
+                              height: "50px",
+                              objectFit: "cover",
+                              borderRadius: "50%",
+                              marginRight: "10px",
+                            }}
+                          />
+                          <span
+                            style={{
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              textOverflow: "ellipsis",
+                              flexGrow: 1,
+                            }}
+                          >
+                            {result.artist_name}
+                          </span>
+                        </div>
+                        <a
+                          className="badge text-bg-success ms-auto"
+                          href="#"
                           style={{
-                            width: "50px",
-                            height: "50px",
-                            objectFit: "cover",
-                            borderRadius: "50%",
+                            whiteSpace: "nowrap",
+                            textDecoration: "none",
                           }}
-                        />
-                        <span
-                          className="badge"
-                          style={{
-                            paddingRight: "200px",
+                          onClick={(e) => {
+                            e.preventDefault();
+                            selectItem(result, "artist");
                           }}
                         >
-                          {result.artistName}
-                        </span>
-                      </a>
-                    );
-                  }
-                  // Check if the result is an Album
-                  if ("albumId" in result) {
-                    return (
-                      <a
-                        key={result.albumId}
-                        href="#"
-                        className="list-group-item list-group-item-action d-flex align-items-center"
-                        style={{
-                          width: "436.3px",
-                        }}
-                      >
-                        <img
-                          src={result.imageUrl || defaultImage}
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            objectFit: "cover",
-                            borderRadius: "50%",
-                          }}
-                        />
-                        <span
-                          className="badge"
-                          style={{
-                            paddingRight: "200px",
-                          }}
-                        >
-                          {result.albumName}
-                        </span>
-                      </a>
-                    );
-                  }
-
-                  // Check if the result is a Track
-                  if ("trackId" in result) {
-                    return (
-                      <a
-                        key={result.trackId}
-                        href="#"
-                        className="list-group-item list-group-item-action d-flex align-items-center"
-                        style={{
-                          width: "436.3px",
-                        }}
-                      >
-                        <img
-                          src={result.imageUrl || defaultImage}
-                          style={{
-                            width: "50px",
-                            height: "50px",
-                            objectFit: "cover",
-                            borderRadius: "50%",
-                          }}
-                        />
-                        <span
-                          className="badge"
-                          style={{
-                            paddingRight: "200px",
-                          }}
-                        >
-                          {result.trackName}
-                        </span>
-                      </a>
+                          Add to profile
+                        </a>
+                      </li>
                     );
                   }
 
-                  return null; // Return nothing if the result doesn't match any type
+                  if ("album_id" in result) {
+                    return (
+                      // <a
+                      //   key={result.albumId}
+                      //   href="#"
+                      //   className="list-group-item list-group-item-action d-flex align-items-center"
+                      //   style={{
+                      //     width: "436.3px",
+                      //   }}
+                      // >
+                      //   <img
+                      //     src={result.imageUrl || defaultImage}
+                      //     style={{
+                      //       width: "50px",
+                      //       height: "50px",
+                      //       objectFit: "cover",
+                      //       borderRadius: "50%",
+                      //     }}
+                      //   />
+                      //   <span
+                      //     className="badge"
+                      //     style={{
+                      //       paddingRight: "200px",
+                      //     }}
+                      //   >
+                      //     {result.albumName}
+                      //   </span>
+                      // </a>
+                      <li
+                        key={result.album_id}
+                        className="list-group-item  d-flex align-items-center"
+                        style={{
+                          width: "436.3px",
+                        }}
+                      >
+                        <div
+                          className="d-flex align-items-center flex-grow-1"
+                          style={{ overflow: "hidden" }}
+                        >
+                          <img
+                            src={result.image_url || defaultImage}
+                            alt="Album"
+                            style={{
+                              width: "50px",
+                              height: "50px",
+                              objectFit: "cover",
+                              borderRadius: "50%",
+                              marginRight: "10px",
+                            }}
+                          />
+                          <span
+                            style={{
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              textOverflow: "ellipsis",
+                              flexGrow: 1,
+                            }}
+                          >
+                            {result.album_name}
+                          </span>
+                        </div>
+                        <a
+                          className="badge text-bg-success ms-auto"
+                          href="#"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textDecoration: "none",
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            selectItem(result, "album");
+                          }}
+                        >
+                          Add to profile
+                        </a>
+                      </li>
+                    );
+                  }
+
+                  if ("track_id" in result) {
+                    return (
+                      <li
+                        key={result.track_id}
+                        className="list-group-item d-flex align-items-center"
+                        style={{
+                          width: "436.3px",
+                        }}
+                      >
+                        <div
+                          className="d-flex align-items-center flex-grow-1"
+                          style={{ overflow: "hidden" }}
+                        >
+                          <img
+                            src={result.image_url || defaultImage}
+                            alt="Track"
+                            style={{
+                              width: "50px",
+                              height: "50px",
+                              objectFit: "cover",
+                              borderRadius: "50%",
+                              marginRight: "10px",
+                            }}
+                          />
+                          <span
+                            style={{
+                              overflow: "hidden",
+                              whiteSpace: "nowrap",
+                              textOverflow: "ellipsis",
+                              flexGrow: 1,
+                            }}
+                          >
+                            {result.track_name}
+                          </span>
+                        </div>
+                        <a
+                          className="badge text-bg-success ms-auto"
+                          href="#"
+                          style={{
+                            whiteSpace: "nowrap",
+                            textDecoration: "none",
+                          }}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            selectItem(result, "track");
+                          }}
+                        >
+                          Add to profile
+                        </a>
+                      </li>
+                    );
+                  }
+
+                  // return nothing if the result doesn't match any type
+                  return null;
                 })}
               </div>
             </div>

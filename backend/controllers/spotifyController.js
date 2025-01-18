@@ -57,52 +57,52 @@ const searchSpotify = async (req, res) => {
     if (type === "artist") {
       // iterate through each artist in the items array
       data.artists.items.forEach((artist) => {
-        const artistId = artist.id;
-        const artistName = artist.name || "Unknown Artist"; // get the first artist's name
-        const imageUrl = artist.images[0]?.url || "No Image Available"; // get the third image URL
+        const artist_id = artist.id;
+        const artist_name = artist.name || "Unknown Artist"; // get the first artist's name
+        const image_url = artist.images[0]?.url || "No Image Available"; // get the third image URL
         // combine the data into an object and add it to the formattedResponse array
         formattedResponse.push({
-          artistId,
-          artistName,
-          imageUrl,
+          artist_id,
+          artist_name,
+          image_url,
         });
       });
     } else if (type === "album") {
       // iterate through each album in the items array
       data.albums.items.forEach((album) => {
-        const albumId = album.id; // get the album ID
-        const albumName = album.name || "Unknown Album"; // get the first artist's name
-        const albumReleaseDate = album.release_date;
-        const totalTracks = album.total_tracks;
-        const imageUrl = album.images[2]?.url || "No Image Available"; // get the first image URL
-        const artistName = album.artists[0].name;
+        const album_id = album.id; // get the album ID
+        const album_name = album.name || "Unknown Album"; // get the first artist's name
+        const album_release_date = album.release_date;
+        const total_tracks = album.total_tracks;
+        const image_url = album.images[2]?.url || "No Image Available"; // get the first image URL
+        const artist_name = album.artists[0].name;
         // combine the data into an object and add it to the formattedResponse array
         formattedResponse.push({
-          albumId,
-          albumName,
-          albumReleaseDate,
-          totalTracks,
-          imageUrl,
-          artistName,
+          album_id,
+          album_name,
+          album_release_date,
+          total_tracks,
+          image_url,
+          artist_name,
         });
       });
     } else if (type === "track") {
       // iterate through each track in the items array
       data.tracks.items.forEach((track) => {
-        const trackId = track.id; // get the track ID
-        const trackName = track.name || "Unknown track"; // get the first track's name
-        const artistName = track.artists[0].name;
+        const track_id = track.id; // get the track ID
+        const track_name = track.name || "Unknown track"; // get the first track's name
+        const artist_name = track.artists[0].name;
         var duration = track.duration_ms;
         duration = millisToMinutesAndSeconds(duration);
-        const imageUrl = track.album.images[2]?.url || "No Image Available"; // get the first image URL
+        const image_url = track.album.images[2]?.url || "No Image Available"; // get the first image URL
 
         // combine the data into an object and add it to the formattedResponse array
         formattedResponse.push({
-          trackId,
-          trackName,
-          artistName,
+          track_id,
+          track_name,
+          artist_name,
           duration,
-          imageUrl,
+          image_url,
         });
       });
     }
