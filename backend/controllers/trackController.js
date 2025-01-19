@@ -11,15 +11,12 @@ const getAllTracks = async (req, res) => {
   }
 };
 
-// get all tracks from database
+// get user tracks from database
 const getUserTracks = async (req, res) => {
   try {
-    // get parameters from request
-    const { track_user_id } = req.body;
-
     const userTracks = await database.query(
       "SELECT * FROM track WHERE track_user_id = $1",
-      [track_user_id]
+      [req.params.id]
     );
     res.send(userTracks.rows);
   } catch (err) {

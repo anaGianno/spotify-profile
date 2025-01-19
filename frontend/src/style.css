@@ -6,7 +6,13 @@ body {
   /* justify-content: center;
   align-items: center; */
 }
-
+p {
+  margin-bottom: 0 !important;
+  font-family: "Red Hat Display", sans-serif;
+  font-weight: 800;
+  display: block;
+  color: rgb(0, 243, 143);
+}
 /* body.log-in {
   justify-content: center;
   align-items: center;
@@ -22,13 +28,6 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-}
-
-p {
-  font-family: "Red Hat Display", sans-serif;
-  font-weight: 800;
-  display: block;
-  color: rgb(0, 243, 143);
 }
 
 .log-in-title {
@@ -72,4 +71,13 @@ p {
   background-color: rgb(0, 15, 15, 0.5);
   border: 1px solid rgb(0, 243, 143, 0.25);
   border-radius: 5px;
+}
+
+.list-group-item-profile {
+  background-color: rgb(0, 15, 15, 0.5);
+  border: 1px solid rgb(0, 243, 143, 0.25);
+  border-radius: 5px;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+  width: 100%;
 }

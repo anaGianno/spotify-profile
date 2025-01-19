@@ -4,6 +4,7 @@ const trackController = require("../controllers/trackController");
 
 // define routes
 router.get("/", trackController.getAllTracks);
+router.get("/:id", trackController.getUserTracks);
 router.post("/", trackController.addTrack);
 router.delete("/:id", trackController.deleteTrack);
 

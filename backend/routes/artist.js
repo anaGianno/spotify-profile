@@ -4,6 +4,7 @@ const artistController = require("../controllers/artistController");
 
 // define routes
 router.get("/", artistController.getAllArtists);
+router.get("/:id", artistController.getUserArtists);
 router.post("/", artistController.addArtist);
 router.delete("/:id", artistController.deleteArtist);
 

@@ -11,6 +11,20 @@ const getAllAlbums = async (req, res) => {
   }
 };
 
+// get user albums from database
+const getUserAlbums = async (req, res) => {
+  try {
+    const userAlbums = await database.query(
+      "SELECT * FROM album WHERE album_user_id = $1",
+      [req.params.id]
+    );
+    res.send(userAlbums.rows);
+  } catch (err) {
+    console.error("Error getting all albums: ", err.message);
+    return res.status(500).send("Error getting all albums: " + err.message);
+  }
+};
+
 // add album to database
 const addAlbum = async (req, res) => {
   try {
@@ -77,6 +91,7 @@ const deleteAlbum = async (req, res) => {
 // export all methods
 module.exports = {
   getAllAlbums,
+  getUserAlbums,
   addAlbum,
   deleteAlbum,
 };

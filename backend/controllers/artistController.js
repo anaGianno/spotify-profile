@@ -11,6 +11,20 @@ const getAllArtists = async (req, res) => {
   }
 };
 
+// get user artists from database
+const getUserArtists = async (req, res) => {
+  try {
+    const userArtists = await database.query(
+      "SELECT * FROM artist WHERE artist_user_id = $1",
+      [req.params.id]
+    );
+    res.send(userArtists.rows);
+  } catch (err) {
+    console.error("Error getting all Artists: ", err.message);
+    return res.status(500).send("Error getting all Artists: " + err.message);
+  }
+};
+
 // add artist to database
 const addArtist = async (req, res) => {
   try {
@@ -61,6 +75,7 @@ const deleteArtist = async (req, res) => {
 // export all methods
 module.exports = {
   getAllArtists,
+  getUserArtists,
   addArtist,
   deleteArtist,
 };
