@@ -20,53 +20,65 @@ function Profile() {
   const params = useParams<{ profileId: string }>();
   const profile_id = params.profileId;
 
+  // initialize trigger for getting user data
+  const [shouldFetchUserData, setShouldFetchUserData] = useState(false);
+
+  // get user and profile data on initial load
   useEffect(() => {
-    getUserData();
-
-    const handleProfile = async () => {
-      try {
-        // fetch user
-        const userResponse = await fetch(
-          `http://localhost:3000/user/${profile_id}`,
-          {
-            method: "GET",
-            credentials: "include",
-          }
-        );
-
-        if (!userResponse.ok) {
-          const status = userResponse.status;
-          const statusText = userResponse.statusText;
-          const errorDetails = await userResponse.text();
-
-          console.error("Error fetching user profile:", {
-            status,
-            statusText,
-            details: errorDetails,
-          });
-        }
-
-        // log user response and data
-        console.log("User response: ", userResponse);
-        const userData = await userResponse.json();
-        console.log("User Data: ", userData);
-
-        // set state of image and username to user data
-        setImage_url(userData.image_url);
-        setUser_name(userData.user_name);
-
-        document.body.className = "profile";
-
-        return () => {
-          document.body.className = ""; // Clean up when the component unmounts
-        };
-      } catch (error) {
-        console.error("Error in profile callback: ", error);
-      }
-    };
-
     handleProfile();
+    setShouldFetchUserData(true);
   }, []);
+
+  // get user data whenever a new item is added to the database
+  useEffect(() => {
+    if (shouldFetchUserData) {
+      getUserData();
+      // reset the state after fetching
+      setShouldFetchUserData(false);
+    }
+  }, [shouldFetchUserData]);
+
+  const handleProfile = async () => {
+    try {
+      // fetch user
+      const userResponse = await fetch(
+        `http://localhost:3000/user/${profile_id}`,
+        {
+          method: "GET",
+          credentials: "include",
+        }
+      );
+
+      if (!userResponse.ok) {
+        const status = userResponse.status;
+        const statusText = userResponse.statusText;
+        const errorDetails = await userResponse.text();
+
+        console.error("Error fetching user profile:", {
+          status,
+          statusText,
+          details: errorDetails,
+        });
+      }
+
+      // log user response and data
+      console.log("User response: ", userResponse);
+      const userData = await userResponse.json();
+      console.log("User Data: ", userData);
+
+      // set state of image and username to user data
+      setImage_url(userData.image_url);
+      setUser_name(userData.user_name);
+
+      document.body.className = "profile";
+
+      return () => {
+        document.body.className = ""; // Clean up when the component unmounts
+      };
+    } catch (error) {
+      console.error("Error in profile callback: ", error);
+    }
+  };
 
   const getUserData = async () => {
     try {
@@ -143,37 +155,24 @@ function Profile() {
         {/* display username if available */}
         {user_name ? <p>{user_name}</p> : <p>No user_name available</p>}
 
-        <Searchbar />
+        {/* searchbar that gets user data when a new item is added */}
+        <Searchbar triggerUpdate={() => setShouldFetchUserData(true)} />
 
         <p>Artists</p>
-        <div className="list-group">
+        <div className="list-group user-items">
           {userArtists.map((artist) => (
             <li
               key={artist.artist_id}
-              className="list-group-item d-flex align-items-center"
-              style={{
-                backgroundColor: "rgb(0, 15, 15, 0.5)",
-                border: "1px solid rgb(0, 243, 143, 0.25)",
-                borderRadius: "5px",
-                marginTop: "1rem",
-                marginBottom: "1rem",
-                width: "100%",
-              }}
+              className="list-group-item user-item d-flex align-items-center"
             >
               <div
                 className="d-flex align-items-center flex-grow-1"
                 style={{ overflow: "hidden" }}
               >
                 <img
+                  className="image-item"
                   src={artist.image_url || defaultImage}
                   alt="Album"
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    objectFit: "cover",
-                    borderRadius: "50%",
-                    marginRight: "10px",
-                  }}
                 />
                 <span
                   style={{
@@ -192,34 +191,20 @@ function Profile() {
         </div>
 
         <p>Albums</p>
-        <div className="list-group">
+        <div className="list-group user-items">
           {userAlbums.map((album) => (
             <li
               key={album.album_id}
-              className="list-group-item d-flex align-items-center"
-              style={{
-                backgroundColor: "rgb(0, 15, 15, 0.5)",
-                border: "1px solid rgb(0, 243, 143, 0.25)",
-                borderRadius: "5px",
-                marginTop: "1rem",
-                marginBottom: "1rem",
-                width: "100%",
-              }}
+              className="list-group-item user-item d-flex align-items-center"
             >
               <div
                 className="d-flex align-items-center flex-grow-1"
                 style={{ overflow: "hidden" }}
               >
                 <img
+                  className="image-item"
                   src={album.image_url || defaultImage}
                   alt="Album"
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    objectFit: "cover",
-                    borderRadius: "50%",
-                    marginRight: "10px",
-                  }}
                 />
                 <span
                   style={{
@@ -238,34 +223,20 @@ function Profile() {
         </div>
 
         <p>Tracks</p>
-        <div className="list-group">
+        <div className="list-group user-items">
           {userTracks.map((track) => (
             <li
               key={track.track_id}
-              className="list-group-item d-flex align-items-center"
-              style={{
-                backgroundColor: "rgb(0, 15, 15, 0.5)",
-                border: "1px solid rgb(0, 243, 143, 0.25)",
-                borderRadius: "5px",
-                marginTop: "1rem",
-                marginBottom: "1rem",
-                width: "100%",
-              }}
+              className="list-group-item user-item d-flex align-items-center"
             >
               <div
                 className="d-flex align-items-center flex-grow-1"
                 style={{ overflow: "hidden" }}
               >
                 <img
+                  className="image-item"
                   src={track.image_url || defaultImage}
                   alt="track"
-                  style={{
-                    width: "50px",
-                    height: "50px",
-                    objectFit: "cover",
-                    borderRadius: "50%",
-                    marginRight: "10px",
-                  }}
                 />
                 <span
                   style={{

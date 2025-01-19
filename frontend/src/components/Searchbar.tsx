@@ -2,7 +2,11 @@ import { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import defaultImage from "../assets/defaultPicture.png";
 
-const Searchbar = () => {
+interface SearchbarProps {
+  triggerUpdate: () => void;
+}
+
+const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
   let categories = ["track", "artist", "album"];
   // set default category to track
   const [selectedCategory, setselectedCategory] = useState("track");
@@ -168,7 +172,7 @@ const Searchbar = () => {
     console.log("Item with profile: ", itemWithProfile);
 
     try {
-      // Add user to database
+      // Add item to database
       const response = await fetch(
         `http://localhost:3000/${encodeURIComponent(type)}`,
         {
@@ -185,6 +189,7 @@ const Searchbar = () => {
 
       const data = await response.json();
       console.log("Server response: ", data);
+      triggerUpdate();
     } catch (error) {
       console.error("Error adding item: ", error);
     }
@@ -289,32 +294,6 @@ const Searchbar = () => {
                 {searchResults.map((result) => {
                   if ("artist_id" in result) {
                     return (
-                      // <a
-                      //   key={result.artistId}
-                      //   href="#"
-                      //   className="list-group-item list-group-item-action d-flex align-items-center"
-                      //   style={{
-                      //     width: "436.3px",
-                      //   }}
-                      // >
-                      //   <img
-                      //     src={result.imageUrl || defaultImage}
-                      //     style={{
-                      //       width: "50px",
-                      //       height: "50px",
-                      //       objectFit: "cover",
-                      //       borderRadius: "50%",
-                      //     }}
-                      //   />
-                      //   <span
-                      //     className="badge"
-                      //     style={{
-                      //       paddingRight: "200px",
-                      //     }}
-                      //   >
-                      //     {result.artistName}
-                      //   </span>
-                      // </a>
                       <li
                         key={result.artist_id}
                         className="list-group-item d-flex align-items-center"
@@ -327,15 +306,9 @@ const Searchbar = () => {
                           style={{ overflow: "hidden" }}
                         >
                           <img
+                            className="image-item"
                             src={result.image_url || defaultImage}
                             alt="Artist"
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              objectFit: "cover",
-                              borderRadius: "50%",
-                              marginRight: "10px",
-                            }}
                           />
                           <span
                             style={{
@@ -368,32 +341,6 @@ const Searchbar = () => {
 
                   if ("album_id" in result) {
                     return (
-                      // <a
-                      //   key={result.albumId}
-                      //   href="#"
-                      //   className="list-group-item list-group-item-action d-flex align-items-center"
-                      //   style={{
-                      //     width: "436.3px",
-                      //   }}
-                      // >
-                      //   <img
-                      //     src={result.imageUrl || defaultImage}
-                      //     style={{
-                      //       width: "50px",
-                      //       height: "50px",
-                      //       objectFit: "cover",
-                      //       borderRadius: "50%",
-                      //     }}
-                      //   />
-                      //   <span
-                      //     className="badge"
-                      //     style={{
-                      //       paddingRight: "200px",
-                      //     }}
-                      //   >
-                      //     {result.albumName}
-                      //   </span>
-                      // </a>
                       <li
                         key={result.album_id}
                         className="list-group-item  d-flex align-items-center"
@@ -406,15 +353,9 @@ const Searchbar = () => {
                           style={{ overflow: "hidden" }}
                         >
                           <img
+                            className="image-item"
                             src={result.image_url || defaultImage}
                             alt="Album"
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              objectFit: "cover",
-                              borderRadius: "50%",
-                              marginRight: "10px",
-                            }}
                           />
                           <span
                             style={{
@@ -459,15 +400,9 @@ const Searchbar = () => {
                           style={{ overflow: "hidden" }}
                         >
                           <img
+                            className="image-item"
                             src={result.image_url || defaultImage}
                             alt="Track"
-                            style={{
-                              width: "50px",
-                              height: "50px",
-                              objectFit: "cover",
-                              borderRadius: "50%",
-                              marginRight: "10px",
-                            }}
                           />
                           <span
                             style={{
