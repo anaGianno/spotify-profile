@@ -73,7 +73,7 @@ function Profile() {
       document.body.className = "profile";
 
       return () => {
-        document.body.className = ""; // Clean up when the component unmounts
+        document.body.className = ""; // clean up when the component unmounts
       };
     } catch (error) {
       console.error("Error in profile callback: ", error);
@@ -143,8 +143,6 @@ function Profile() {
     // display profile
     <>
       <div className="profile-parent">
-        <p>Profile {params.profileId}</p>
-
         {/* display image if available */}
         {image_url ? (
           <ProfilePicture src={image_url} />
@@ -170,21 +168,11 @@ function Profile() {
                 style={{ overflow: "hidden" }}
               >
                 <img
-                  className="image-item"
+                  className="item-image"
                   src={artist.image_url || defaultImage}
                   alt="Album"
                 />
-                <span
-                  style={{
-                    overflow: "hidden",
-                    whiteSpace: "nowrap",
-                    textOverflow: "ellipsis",
-                    flexGrow: 1,
-                    color: "white",
-                  }}
-                >
-                  {artist.artist_name}
-                </span>
+                <span className="item-text">{artist.artist_name}</span>
               </div>
             </li>
           ))}
@@ -202,21 +190,11 @@ function Profile() {
                 style={{ overflow: "hidden" }}
               >
                 <img
-                  className="image-item"
+                  className="item-image"
                   src={album.image_url || defaultImage}
                   alt="Album"
                 />
-                <span
-                  style={{
-                    overflow: "hidden",
-                    whiteSpace: "nowrap",
-                    textOverflow: "ellipsis",
-                    flexGrow: 1,
-                    color: "white",
-                  }}
-                >
-                  {album.album_name}
-                </span>
+                <span className="item-text">{album.album_name}</span>
               </div>
             </li>
           ))}
@@ -234,21 +212,11 @@ function Profile() {
                 style={{ overflow: "hidden" }}
               >
                 <img
-                  className="image-item"
+                  className="item-image"
                   src={track.image_url || defaultImage}
                   alt="track"
                 />
-                <span
-                  style={{
-                    overflow: "hidden",
-                    whiteSpace: "nowrap",
-                    textOverflow: "ellipsis",
-                    flexGrow: 1,
-                    color: "white",
-                  }}
-                >
-                  {track.track_name}
-                </span>
+                <span className="item-text">{track.track_name}</span>
               </div>
             </li>
           ))}

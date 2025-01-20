@@ -87,10 +87,26 @@ p {
   width: 100%;
 }
 
-.image-item {
+.item-image {
   width: 50px;
   height: 50px;
   object-fit: cover;
   border-radius: 50%;
   margin-right: 10px;
+}
+
+.item-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+  color: white;
+  user-select: none;
+}
+
+.collapse.collapse-position {
+  position: absolute;
+  top: 100%;
+  left: 81px;
+  z-index: 1000;
 }

@@ -9,7 +9,8 @@ interface SearchbarProps {
 const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
   let categories = ["track", "artist", "album"];
   // set default category to track
-  const [selectedCategory, setselectedCategory] = useState("track");
+  const [selectedCategory, setSelectedCategory] = useState("track");
+  const [searchCategory, setSearchCategory] = useState("track");
   // set dropdown default to closed
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   // set deafult search query as empty
@@ -21,6 +22,7 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
   >([]);
 
   const onSearch = async () => {
+    console.log("Search Category:", searchCategory);
     // open dropdown when search button is clicked
     setIsDropdownOpen(true);
     console.log("Query:", query);
@@ -54,81 +56,7 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
     const searchData = await searchResponse.json();
     console.log("Search Data: ", searchData);
 
-    let searchResult: (Artist | Album | Track)[] = [];
-
-    // push artist data to search result array
-    if (selectedCategory === "artist") {
-      searchData.forEach((artist: Artist) => {
-        const artist_id = artist.artist_id;
-        const artist_name = artist.artist_name || "Unknown Artist";
-        const image_url =
-          artist.image_url === "No Image Available" || !artist.image_url
-            ? defaultImage
-            : artist.image_url;
-
-        console.log("Artist Details:");
-        console.log("ID:", artist_id);
-        console.log("Name:", artist_name);
-        console.log("Image URL:", image_url);
-        searchResult.push({
-          artist_id,
-          artist_name,
-          image_url,
-        });
-      });
-      // push album data to search result array
-    } else if (selectedCategory === "album") {
-      searchData.forEach((album: Album) => {
-        const album_id = album.album_id;
-        const album_name = album.album_name || "Unknown album";
-        const album_release_date = album.album_release_date;
-        const total_tracks = album.total_tracks;
-        const image_url = album.image_url || "No Image Available";
-        const artist_name = album.artist_name;
-
-        console.log("Album Details:");
-        console.log("ID:", album_id);
-        console.log("Name:", album_name);
-        console.log("Release Date:", album_release_date);
-        console.log("Total tracks:", total_tracks);
-        console.log("Image URL:", image_url);
-        console.log("Artist Name:", artist_name);
-
-        searchResult.push({
-          album_id,
-          album_name,
-          album_release_date,
-          total_tracks,
-          image_url,
-          artist_name,
-        });
-      });
-      // push track data to search result array
-    } else if (selectedCategory === "track") {
-      searchData.forEach((track: Track) => {
-        const track_id = track.track_id;
-        const track_name = track.track_name || "Unknown track";
-        const artist_name = track.artist_name;
-        const duration = track.duration;
-        const image_url = track.image_url || "No Image Available";
-
-        console.log("Track Details:");
-        console.log("ID:", track_id);
-        console.log("Name:", track_name);
-        console.log("Artist:", artist_name);
-        console.log("Duration:", duration);
-        console.log("Image URL:", image_url);
-        searchResult.push({
-          track_id,
-          track_name,
-          artist_name,
-          duration,
-          image_url,
-        });
-      });
-    }
-    // set search result to array with pushed data
-    setSearchResults(searchResult);
+    setSearchResults(searchData);
   };
 
   // track the dropdown and the search button
@@ -156,7 +84,7 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
   const params = useParams<{ profileId: string }>();
   const profile_id = params.profileId;
 
-  const selectItem = async (item: Artist | Album | Track, type: string) => {
+  const selectItem = async (item: Artist | Album | Track) => {
     console.log("Selected Item: ", item);
     if (!profile_id) {
       console.error("Profile ID is undefined");
@@ -164,7 +92,7 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
     }
 
     // Dynamically set the key name based on the type
-    const keyName = `${type}_user_id`; // This will be "artist_id", "album_id", or "track_id"
+    const keyName = `${selectedCategory}_user_id`; // This will be "artist_id", "album_id", or "track_id"
 
     // Attach the dynamic key to the selected item
     const itemWithProfile = { ...item, [keyName]: profile_id };
@@ -174,7 +102,7 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
     try {
       // Add item to database
       const response = await fetch(
-        `http://localhost:3000/${encodeURIComponent(type)}`,
+        `http://localhost:3000/${encodeURIComponent(selectedCategory)}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -221,7 +149,7 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
                   }
                   href="#"
                   onClick={() => {
-                    setselectedCategory(category);
+                    setSelectedCategory(category);
                   }}
                 >
                   {category}
@@ -239,6 +167,7 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
             onSubmit={(e) => {
               // prevent page refresh
               e.preventDefault();
+              setSearchCategory(selectedCategory);
               onSearch();
             }}
           >
@@ -246,10 +175,13 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
             <button
               className="btn btn-outline-success"
               type="button"
-              onClick={onSearch}
               data-bs-target="#collapseExample"
               aria-expanded={isDropdownOpen}
               aria-controls="collapseExample"
+              onClick={() => {
+                setSearchCategory(selectedCategory);
+                onSearch();
+              }}
             >
               Search
             </button>
@@ -275,14 +207,10 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
             {/* results collapse */}
             <div
               // display results based on state
-              className={`collapse ${isDropdownOpen ? "show" : ""}`}
+              className={`collapse collapse-position ${
+                isDropdownOpen ? "show" : ""
+              }`}
               id="collapseExample"
-              style={{
-                position: "absolute",
-                top: "100%",
-                left: "81px",
-                zIndex: 1000,
-              }}
               onTransitionEnd={() => {
                 // sync state with bootstrap's collapse behavior
                 const element = document.getElementById("collapseExample");
@@ -292,149 +220,64 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
               <div className="list-group">
                 {/* display all results */}
                 {searchResults.map((result) => {
-                  if ("artist_id" in result) {
-                    return (
-                      <li
-                        key={result.artist_id}
-                        className="list-group-item d-flex align-items-center"
+                  // if ("artist_id" in result) {
+                  return (
+                    <li
+                      key={
+                        result[
+                          `${searchCategory}_id` as keyof (
+                            | Artist
+                            | Album
+                            | Track
+                          )
+                        ]
+                      }
+                      className="list-group-item d-flex align-items-center"
+                      style={{
+                        width: "436.3px",
+                      }}
+                    >
+                      <div
+                        className="d-flex align-items-center flex-grow-1"
+                        style={{ overflow: "hidden" }}
+                      >
+                        <img
+                          className="item-image"
+                          src={
+                            result.image_url == "No Image Available"
+                              ? defaultImage
+                              : result.image_url
+                          }
+                          alt="Artist"
+                        />
+                        <span className="item-text">
+                          {
+                            result[
+                              `${searchCategory}_name` as keyof (
+                                | Artist
+                                | Album
+                                | Track
+                              )
+                            ]
+                          }
+                        </span>
+                      </div>
+                      <a
+                        className="badge text-bg-success ms-auto"
+                        href="#"
                         style={{
-                          width: "436.3px",
+                          whiteSpace: "nowrap",
+                          textDecoration: "none",
+                        }}
+                        onClick={(e) => {
+                          e.preventDefault();
+                          selectItem(result);
                         }}
                       >
-                        <div
-                          className="d-flex align-items-center flex-grow-1"
-                          style={{ overflow: "hidden" }}
-                        >
-                          <img
-                            className="image-item"
-                            src={result.image_url || defaultImage}
-                            alt="Artist"
-                          />
-                          <span
-                            style={{
-                              overflow: "hidden",
-                              whiteSpace: "nowrap",
-                              textOverflow: "ellipsis",
-                              flexGrow: 1,
-                            }}
-                          >
-                            {result.artist_name}
-                          </span>
-                        </div>
-                        <a
-                          className="badge text-bg-success ms-auto"
-                          href="#"
-                          style={{
-                            whiteSpace: "nowrap",
-                            textDecoration: "none",
-                          }}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            selectItem(result, "artist");
-                          }}
-                        >
-                          Add to profile
-                        </a>
-                      </li>
-                    );
-                  }
-
-                  if ("album_id" in result) {
-                    return (
-                      <li
-                        key={result.album_id}
-                        className="list-group-item  d-flex align-items-center"
-                        style={{
-                          width: "436.3px",
-                        }}
-                      >
-                        <div
-                          className="d-flex align-items-center flex-grow-1"
-                          style={{ overflow: "hidden" }}
-                        >
-                          <img
-                            className="image-item"
-                            src={result.image_url || defaultImage}
-                            alt="Album"
-                          />
-                          <span
-                            style={{
-                              overflow: "hidden",
-                              whiteSpace: "nowrap",
-                              textOverflow: "ellipsis",
-                              flexGrow: 1,
-                            }}
-                          >
-                            {result.album_name}
-                          </span>
-                        </div>
-                        <a
-                          className="badge text-bg-success ms-auto"
-                          href="#"
-                          style={{
-                            whiteSpace: "nowrap",
-                            textDecoration: "none",
-                          }}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            selectItem(result, "album");
-                          }}
-                        >
-                          Add to profile
-                        </a>
-                      </li>
-                    );
-                  }
-
-                  if ("track_id" in result) {
-                    return (
-                      <li
-                        key={result.track_id}
-                        className="list-group-item d-flex align-items-center"
-                        style={{
-                          width: "436.3px",
-                        }}
-                      >
-                        <div
-                          className="d-flex align-items-center flex-grow-1"
-                          style={{ overflow: "hidden" }}
-                        >
-                          <img
-                            className="image-item"
-                            src={result.image_url || defaultImage}
-                            alt="Track"
-                          />
-                          <span
-                            style={{
-                              overflow: "hidden",
-                              whiteSpace: "nowrap",
-                              textOverflow: "ellipsis",
-                              flexGrow: 1,
-                            }}
-                          >
-                            {result.track_name}
-                          </span>
-                        </div>
-                        <a
-                          className="badge text-bg-success ms-auto"
-                          href="#"
-                          style={{
-                            whiteSpace: "nowrap",
-                            textDecoration: "none",
-                          }}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            selectItem(result, "track");
-                          }}
-                        >
-                          Add to profile
-                        </a>
-                      </li>
-                    );
-                  }
-
-                  // return nothing if the result doesn't match any type
-                  return null;
+                        Add to profile
+                      </a>
+                    </li>
+                  );
                 })}
               </div>
             </div>

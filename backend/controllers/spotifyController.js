@@ -74,7 +74,7 @@ const searchSpotify = async (req, res) => {
         const album_name = album.name || "Unknown Album"; // get the first artist's name
         const album_release_date = album.release_date;
         const total_tracks = album.total_tracks;
-        const image_url = album.images[2]?.url || "No Image Available"; // get the first image URL
+        const image_url = album.images[0]?.url || "No Image Available"; // get the first image URL
         const artist_name = album.artists[0].name;
         // combine the data into an object and add it to the formattedResponse array
         formattedResponse.push({
@@ -94,7 +94,7 @@ const searchSpotify = async (req, res) => {
         const artist_name = track.artists[0].name;
         var duration = track.duration_ms;
         duration = millisToMinutesAndSeconds(duration);
-        const image_url = track.album.images[2]?.url || "No Image Available"; // get the first image URL
+        const image_url = track.album.images[0]?.url || "No Image Available"; // get the first image URL
 
         // combine the data into an object and add it to the formattedResponse array
         formattedResponse.push({
