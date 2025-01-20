@@ -54,25 +54,34 @@ const addTrack = async (req, res) => {
 // delete track from database
 const deleteTrack = async (req, res) => {
   try {
+    const { track_id } = req.query;
+
+    // validate inputs
+    if (!track_id) {
+      return res.status(400).send("Error: track_id is required");
+    }
+
     // get track from database
     const track = await database.query(
-      "SELECT * FROM track WHERE track_id = $1",
-      [req.params.id]
+      "SELECT * FROM track WHERE track_user_id = $1 AND track_id = $2",
+      [req.params.id, track_id]
     );
 
     // return error if track not found
     if (track.rows[0] == undefined)
       return res
         .status(404)
-        .send(`Error: track with ID ${req.params.id} not found`);
+        .send(
+          `Error: track with ID ${track_id} and user ID ${req.params.id} not found`
+        );
 
     // delete track
     const deleteTrack = await database.query(
-      "DELETE FROM track WHERE track_id = $1",
-      [req.params.id]
+      "DELETE FROM track WHERE track_user_id = $1 AND track_id = $2",
+      [req.params.id, track_id]
     );
 
-    res.send(`Track with ID: ${req.params.id} was deleted`);
+    res.send(`track with ID: ${track_id} was deleted`);
   } catch (err) {
     console.error("Error deleting track: ", err.message);
     return res.status(500).send("Error deleting track: " + err.message);

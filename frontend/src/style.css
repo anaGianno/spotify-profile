@@ -56,6 +56,19 @@ p {
   justify-content: space-between;
 }
 
+.searchbar {
+  background-color: rgb(0, 15, 15, 0.5);
+  border: 1px solid rgb(0, 243, 143, 0.25);
+  border-radius: 5px;
+  margin-top: 1rem;
+  margin-bottom: 1rem;
+}
+
+/* increase specificity to apply to bootstrap elements */
+.list-group.user-items {
+  margin-bottom: 1rem;
+}
+
 .profile-parent {
   background-color: rgb(0, 15, 15, 0.5);
   border: 1px solid rgb(0, 243, 143, 0.25);
@@ -65,19 +78,6 @@ p {
   margin-bottom: 2.5%;
   padding: 1rem;
   border-radius: 5px;
-}
-
-.searchbar {
-  background-color: rgb(0, 15, 15, 0.5);
-  border: 1px solid rgb(0, 243, 143, 0.25);
-  border-radius: 5px;
-  margin-top: 1rem;
-  margin-bottom: 1rem;
-}
-
-/* increase specificity to apply to boostrap elements */
-.list-group.user-items {
-  margin-bottom: 1rem;
 }
 
 .list-group-item.user-item {
@@ -102,6 +102,10 @@ p {
   flex-grow: 1;
   color: white;
   user-select: none;
+}
+
+.btn-close.item-close {
+  margin-right: 0.25rem;
 }
 
 .collapse.collapse-position {

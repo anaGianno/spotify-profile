@@ -63,25 +63,34 @@ const addAlbum = async (req, res) => {
 // delete album from database
 const deleteAlbum = async (req, res) => {
   try {
-    // query album from database
+    const { album_id } = req.query;
+
+    // validate inputs
+    if (!album_id) {
+      return res.status(400).send("Error: album_id is required");
+    }
+
+    // get album from database
     const album = await database.query(
-      "SELECT * FROM album WHERE album_id = $1",
-      [req.params.id]
+      "SELECT * FROM album WHERE album_user_id = $1 AND album_id = $2",
+      [req.params.id, album_id]
     );
 
     // return error if album not found
     if (album.rows[0] == undefined)
       return res
         .status(404)
-        .send(`Error: album with id ${req.params.id} not found`);
+        .send(
+          `Error: album with ID ${album_id} and user ID ${req.params.id} not found`
+        );
 
     // delete album
     const deleteAlbum = await database.query(
-      "DELETE FROM album WHERE album_id = $1",
-      [req.params.id]
+      "DELETE FROM album WHERE album_user_id = $1 AND album_id = $2",
+      [req.params.id, album_id]
     );
 
-    res.send(`Album with ID: ${req.params.id} was deleted`);
+    res.send(`album with ID: ${album_id} was deleted`);
   } catch (err) {
     console.error("Error deleting album: ", err.message);
     return res.status(500).send("Error deleting album: " + err.message);

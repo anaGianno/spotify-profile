@@ -139,6 +139,43 @@ function Profile() {
     }
   };
 
+  const deleteItem = async (item: Artist | Album | Track, category: string) => {
+    console.log("Deleting Item: ", item);
+    if (!profile_id) {
+      console.error("Profile ID is undefined");
+      return;
+    }
+    console.log(
+      `http://localhost:3000/${category}/${profile_id}?${category}_id=${
+        item[`${category}_id` as keyof (Artist | Album | Track)]
+      }`
+    );
+
+    try {
+      // delete item from database
+      const response = await fetch(
+        `http://localhost:3000/${category}/${profile_id}?${category}_id=${
+          item[`${category}_id` as keyof (Artist | Album | Track)]
+        }`,
+        {
+          method: "DELETE",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        console.error(`Failed to delete item: ${response.statusText}`);
+      }
+
+      console.log("Deleted item");
+      console.log("Delete item response: ", response);
+      setShouldFetchUserData(true);
+    } catch (error) {
+      console.error("Error deleting item: ", error);
+    }
+  };
+
   return (
     // display profile
     <>
@@ -173,6 +210,16 @@ function Profile() {
                   alt="Album"
                 />
                 <span className="item-text">{artist.artist_name}</span>
+                <div data-bs-theme="dark">
+                  <button
+                    type="button"
+                    className="btn-close item-close"
+                    aria-label="Close"
+                    onClick={() => {
+                      deleteItem(artist, "artist");
+                    }}
+                  ></button>
+                </div>
               </div>
             </li>
           ))}
@@ -195,6 +242,16 @@ function Profile() {
                   alt="Album"
                 />
                 <span className="item-text">{album.album_name}</span>
+                <div data-bs-theme="dark">
+                  <button
+                    type="button"
+                    className="btn-close item-close"
+                    aria-label="Close"
+                    onClick={() => {
+                      deleteItem(album, "album");
+                    }}
+                  ></button>
+                </div>
               </div>
             </li>
           ))}
@@ -217,6 +274,16 @@ function Profile() {
                   alt="track"
                 />
                 <span className="item-text">{track.track_name}</span>
+                <div data-bs-theme="dark">
+                  <button
+                    type="button"
+                    className="btn-close item-close"
+                    aria-label="Close"
+                    onClick={() => {
+                      deleteItem(track, "track");
+                    }}
+                  ></button>
+                </div>
               </div>
             </li>
           ))}
