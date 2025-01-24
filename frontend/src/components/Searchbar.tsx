@@ -22,13 +22,15 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
   >([]);
 
   const onSearch = async () => {
-    console.log("Search Category:", searchCategory);
+    // clear previous search results
+    setSearchResults([]);
+
     // open dropdown when search button is clicked
     setIsDropdownOpen(true);
     console.log("Query:", query);
     console.log("Category:", selectedCategory);
 
-    // fetch spotify response using query and category
+    // fetch spotify response using query and selectedCategory
     const searchResponse = await fetch(
       `http://localhost:3000/spotify/search?query=${encodeURIComponent(
         query
@@ -80,7 +82,7 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
     };
   }, []);
 
-  // Initialize profile ID from URL
+  // initialize profile ID from URL
   const params = useParams<{ profileId: string }>();
   const profile_id = params.profileId;
 
@@ -91,16 +93,16 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
       return;
     }
 
-    // Dynamically set the key name based on the type
-    const keyName = `${selectedCategory}_user_id`; // This will be "artist_id", "album_id", or "track_id"
+    // dynamically set the key name based on the type
+    const keyName = `${selectedCategory}_user_id`;
 
-    // Attach the dynamic key to the selected item
+    // attach the dynamic key to the selected item
     const itemWithProfile = { ...item, [keyName]: profile_id };
 
     console.log("Item with profile: ", itemWithProfile);
 
     try {
-      // Add item to database
+      // add item to database
       const response = await fetch(
         `http://localhost:3000/${encodeURIComponent(selectedCategory)}`,
         {
@@ -167,6 +169,7 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
             onSubmit={(e) => {
               // prevent page refresh
               e.preventDefault();
+              // lock in the search category
               setSearchCategory(selectedCategory);
               onSearch();
             }}
@@ -179,6 +182,7 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
               aria-expanded={isDropdownOpen}
               aria-controls="collapseExample"
               onClick={() => {
+                // lock in the search category
                 setSearchCategory(selectedCategory);
                 onSearch();
               }}
@@ -220,8 +224,8 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
               <div className="list-group">
                 {/* display all results */}
                 {searchResults.map((result) => {
-                  // if ("artist_id" in result) {
                   return (
+                    // bracket notation for dynamic access
                     <li
                       key={
                         result[

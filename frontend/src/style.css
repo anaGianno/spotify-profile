@@ -1,17 +1,17 @@
 body {
   background-image: linear-gradient(rgb(19, 60, 51), rgb(0, 15, 15));
   display: flex;
-  height: 100vh; /* Full viewport height */
+  min-height: 100% !important;
+  height: 100vh !important;
+  height: 100% !important;
   margin: 0;
-  /* justify-content: center;
-  align-items: center; */
 }
 p {
   margin-bottom: 0 !important;
   font-family: "Red Hat Display", sans-serif;
   font-weight: 800;
-  display: block;
-  color: rgb(0, 243, 143);
+  color: white;
+  user-select: none;
 }
 /* body.log-in {
   justify-content: center;
@@ -19,8 +19,9 @@ p {
 } */
 
 .root {
-  height: 100%;
-  width: 100%;
+  min-height: 100%;
+  height: 100vh;
+  width: 100vw;
 }
 
 .log-in {
@@ -64,16 +65,12 @@ p {
   margin-bottom: 1rem;
 }
 
-/* increase specificity to apply to bootstrap elements */
-.list-group.user-items {
-  margin-bottom: 1rem;
-}
-
 .profile-parent {
+  height: 90%;
   background-color: rgb(0, 15, 15, 0.5);
   border: 1px solid rgb(0, 243, 143, 0.25);
-  margin-left: 20%;
-  margin-right: 20%;
+  margin-left: 30%;
+  margin-right: 30%;
   margin-top: 2.5%;
   margin-bottom: 2.5%;
   padding: 1rem;
@@ -82,9 +79,23 @@ p {
 
 .list-group-item.user-item {
   background-color: rgb(0, 15, 15, 0.5);
-  border: 1px solid rgb(0, 243, 143, 0.25);
-  border-radius: 5px;
+  border-top: 0px solid rgb(0, 243, 143, 0.25);
+  border-left: 0px solid rgb(0, 243, 143, 0.25);
+  border-right: 0px solid rgb(0, 243, 143, 0.25);
+  border-bottom: 1px solid rgb(0, 243, 143, 0.25);
   width: 100%;
+}
+
+/* increase specificity to apply to bootstrap elements */
+.list-group.user-items {
+  background-color: rgb(0, 15, 15, 0.5);
+  border-top: 1px solid rgb(0, 243, 143, 0.25);
+  border-left: 1px solid rgb(0, 243, 143, 0.25);
+  border-right: 1px solid rgb(0, 243, 143, 0.25);
+  border-radius: 5px;
+  height: auto;
+  width: 100%;
+  margin-top: 0.5rem;
 }
 
 .item-image {
@@ -104,6 +115,16 @@ p {
   user-select: none;
 }
 
+/* .category-text {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  flex-grow: 1;
+  color: white;
+
+  margin-bottom: 1rem;
+} */
+
 .btn-close.item-close {
   margin-right: 0.25rem;
 }
@@ -113,4 +134,69 @@ p {
   top: 100%;
   left: 81px;
   z-index: 1000;
+}
+
+.list-group-container {
+  width: 100%;
+  display: inline-block;
+}
+
+.list-group-flex {
+  flex-direction: column;
+  height: 58.5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  align-items: space-between;
+  padding: 1rem;
+  background-color: rgb(0, 15, 15, 0.5);
+  border: 1px solid rgb(0, 243, 143, 0.25);
+  border-radius: 5px;
+  margin-top: 1rem;
+}
+
+.loading {
+  display: flex;
+  justify-content: center; /* Horizontal centering */
+  align-items: center; /* Vertical centering */
+  height: 100vh; /* Example: Full viewport height */
+  width: 100vw;
+}
+
+.profile-top-container {
+  width: 100%;
+  height: 35%;
+  position: relative;
+  margin-bottom: 1rem;
+}
+
+.profile-top {
+  position: absolute;
+  background-image: linear-gradient(rgb(0, 243, 143), rgb(19, 60, 51));
+  border-radius: 5px;
+  width: 100%;
+  height: 100%;
+}
+
+.profile-top-username {
+  position: absolute;
+  top: 40%;
+  left: 40%;
+  font-size: 4rem;
+}
+/* 
+.img-fluid.profile-image {
+  border: 10px solid rgb(0, 243, 143, 1) !important;
+  border-radius: 50%;
+  display: block;
+  position: absolute;
+  top: 10%;
+} */
+
+.btn-group.category-select {
+  width: 100%;
+}
+
+.btn {
+  font-family: "Red Hat Display", sans-serif !important;
 }

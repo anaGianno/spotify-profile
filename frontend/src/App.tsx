@@ -6,11 +6,13 @@ function App() {
   useEffect(() => {
     const rootElement = document.getElementById("root");
     if (rootElement) {
-      rootElement.className = "root log-in"; // Set the className for the root div
+      // set the className for the root div
+      rootElement.className = "root log-in";
     }
     return () => {
       if (rootElement) {
-        rootElement.className = ""; // Clean up on unmount
+        // clean up on unmount
+        rootElement.className = "";
       }
     };
   }, []);

@@ -23,6 +23,8 @@ function Profile() {
   // initialize trigger for getting user data
   const [shouldFetchUserData, setShouldFetchUserData] = useState(false);
 
+  const [selectedCategory, setSelectedCategory] = useState("artist");
+
   // get user and profile data on initial load
   useEffect(() => {
     handleProfile();
@@ -180,113 +182,208 @@ function Profile() {
     // display profile
     <>
       <div className="profile-parent">
-        {/* display image if available */}
-        {image_url ? (
-          <ProfilePicture src={image_url} />
-        ) : (
-          <div>No image available</div>
-        )}
+        <div className="profile-top-container">
+          <div className="profile-top" />
+          {/* display image if available */}
+          {image_url ? (
+            <ProfilePicture src={image_url} />
+          ) : (
+            <div>No image available</div>
+          )}
 
-        {/* display username if available */}
-        {user_name ? <p>{user_name}</p> : <p>No user_name available</p>}
+          {/* display username if available */}
+          {user_name ? (
+            <p className="profile-top-username">{user_name}</p>
+          ) : (
+            <p>No user_name available</p>
+          )}
+        </div>
 
         {/* searchbar that gets user data when a new item is added */}
-        <Searchbar triggerUpdate={() => setShouldFetchUserData(true)} />
+        {/* <Searchbar triggerUpdate={() => setShouldFetchUserData(true)} /> */}
+        <div
+          className="btn-group category-select"
+          role="group"
+          aria-label="Basic radio toggle button group"
+        >
+          <input
+            type="radio"
+            className="btn-check"
+            name="btnradio"
+            id="btnradio1"
+            autoComplete="off"
+            checked={selectedCategory === "artist"}
+            onChange={() => setSelectedCategory("artist")}
+          />
+          <label
+            className="btn btn-outline-success"
+            htmlFor="btnradio1"
+            // onClick={() => {
+            //   setSelectedCategory("artist");
+            // }}
+          >
+            Artist
+          </label>
 
-        <p>Artists</p>
-        <div className="list-group user-items">
-          {userArtists.map((artist) => (
-            <li
-              key={artist.artist_id}
-              className="list-group-item user-item d-flex align-items-center"
-            >
-              <div
-                className="d-flex align-items-center flex-grow-1"
-                style={{ overflow: "hidden" }}
-              >
-                <img
-                  className="item-image"
-                  src={artist.image_url || defaultImage}
-                  alt="Album"
-                />
-                <span className="item-text">{artist.artist_name}</span>
-                <div data-bs-theme="dark">
-                  <button
-                    type="button"
-                    className="btn-close item-close"
-                    aria-label="Close"
-                    onClick={() => {
-                      deleteItem(artist, "artist");
-                    }}
-                  ></button>
-                </div>
-              </div>
-            </li>
-          ))}
+          <input
+            type="radio"
+            className="btn-check"
+            name="btnradio"
+            id="btnradio2"
+            autoComplete="off"
+            checked={selectedCategory === "album"}
+            onChange={() => setSelectedCategory("album")}
+          />
+          <label
+            className="btn btn-outline-success"
+            htmlFor="btnradio2"
+            // onClick={() => {
+            //   setSelectedCategory("album");
+            // }}
+          >
+            Album
+          </label>
+
+          <input
+            type="radio"
+            className="btn-check"
+            name="btnradio"
+            id="btnradio3"
+            autoComplete="off"
+            checked={selectedCategory === "track"}
+            onChange={() => setSelectedCategory("track")}
+          />
+          <label
+            className="btn btn-outline-success"
+            htmlFor="btnradio3"
+            // onClick={() => {
+            //   setSelectedCategory("track");
+            // }}
+          >
+            Track
+          </label>
         </div>
 
-        <p>Albums</p>
-        <div className="list-group user-items">
-          {userAlbums.map((album) => (
-            <li
-              key={album.album_id}
-              className="list-group-item user-item d-flex align-items-center"
-            >
-              <div
-                className="d-flex align-items-center flex-grow-1"
-                style={{ overflow: "hidden" }}
-              >
-                <img
-                  className="item-image"
-                  src={album.image_url || defaultImage}
-                  alt="Album"
-                />
-                <span className="item-text">{album.album_name}</span>
-                <div data-bs-theme="dark">
-                  <button
-                    type="button"
-                    className="btn-close item-close"
-                    aria-label="Close"
-                    onClick={() => {
-                      deleteItem(album, "album");
-                    }}
-                  ></button>
-                </div>
-              </div>
-            </li>
-          ))}
-        </div>
+        <div className="list-group-flex">
+          <div
+            className="list-group-container"
+            style={{
+              visibility: selectedCategory !== "artist" ? "hidden" : "visible",
+              display: selectedCategory !== "artist" ? "none" : "block",
+            }}
+          >
+            <p className="category-text">Artists</p>
+            <div className="list-group user-items">
+              {userArtists.map((artist) => (
+                <li
+                  key={artist.artist_id}
+                  className="list-group-item user-item d-flex align-items-center"
+                >
+                  <div
+                    className="d-flex align-items-center flex-grow-1"
+                    style={{ overflow: "hidden" }}
+                  >
+                    <img
+                      className="item-image"
+                      src={artist.image_url || defaultImage}
+                      alt="Artist"
+                    />
+                    <span className="item-text">{artist.artist_name}</span>
+                    <div data-bs-theme="dark">
+                      <button
+                        type="button"
+                        className="btn-close item-close"
+                        aria-label="Close"
+                        onClick={() => {
+                          deleteItem(artist, "artist");
+                        }}
+                      ></button>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </div>
+          </div>
 
-        <p>Tracks</p>
-        <div className="list-group user-items">
-          {userTracks.map((track) => (
-            <li
-              key={track.track_id}
-              className="list-group-item user-item d-flex align-items-center"
-            >
-              <div
-                className="d-flex align-items-center flex-grow-1"
-                style={{ overflow: "hidden" }}
-              >
-                <img
-                  className="item-image"
-                  src={track.image_url || defaultImage}
-                  alt="track"
-                />
-                <span className="item-text">{track.track_name}</span>
-                <div data-bs-theme="dark">
-                  <button
-                    type="button"
-                    className="btn-close item-close"
-                    aria-label="Close"
-                    onClick={() => {
-                      deleteItem(track, "track");
-                    }}
-                  ></button>
-                </div>
-              </div>
-            </li>
-          ))}
+          <div
+            className="list-group-container"
+            style={{
+              visibility: selectedCategory !== "album" ? "hidden" : "visible",
+              display: selectedCategory !== "album" ? "none" : "block",
+            }}
+          >
+            <p className="category-text">Albums</p>
+            <div className="list-group user-items">
+              {userAlbums.map((album) => (
+                <li
+                  key={album.album_id}
+                  className="list-group-item user-item d-flex align-items-center"
+                >
+                  <div
+                    className="d-flex align-items-center flex-grow-1"
+                    style={{ overflow: "hidden" }}
+                  >
+                    <img
+                      className="item-image"
+                      src={album.image_url || defaultImage}
+                      alt="Album"
+                    />
+                    <span className="item-text">{album.album_name}</span>
+                    <div data-bs-theme="dark">
+                      <button
+                        type="button"
+                        className="btn-close item-close"
+                        aria-label="Close"
+                        onClick={() => {
+                          deleteItem(album, "album");
+                        }}
+                      ></button>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </div>
+          </div>
+
+          <div
+            className="list-group-container"
+            style={{
+              visibility: selectedCategory !== "track" ? "hidden" : "visible",
+              display: selectedCategory !== "track" ? "none" : "block",
+            }}
+          >
+            <p>Tracks</p>
+            <div className="list-group user-items">
+              {userTracks.map((track) => (
+                <li
+                  key={track.track_id}
+                  className="list-group-item user-item d-flex align-items-center"
+                >
+                  <div
+                    className="d-flex align-items-center flex-grow-1"
+                    style={{ overflow: "hidden" }}
+                  >
+                    <img
+                      className="item-image"
+                      src={track.image_url || defaultImage}
+                      alt="Track"
+                    />
+                    <span className="item-text">{track.track_name}</span>
+                    <div data-bs-theme="dark">
+                      <button
+                        type="button"
+                        className="btn-close item-close"
+                        aria-label="Close"
+                        onClick={() => {
+                          deleteItem(track, "track");
+                        }}
+                      ></button>
+                    </div>
+                  </div>
+                </li>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </>
