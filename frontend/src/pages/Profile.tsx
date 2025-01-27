@@ -25,6 +25,18 @@ function Profile() {
 
   const [selectedCategory, setSelectedCategory] = useState("artist");
 
+  const capitalizedSelectedCategory = `user${
+    selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)
+  }s`;
+
+  const data = {
+    userArtists,
+    userTracks,
+    userAlbums,
+  };
+
+  const items = data[capitalizedSelectedCategory as keyof typeof data] || [];
+
   // get user and profile data on initial load
   useEffect(() => {
     handleProfile();
@@ -246,7 +258,67 @@ function Profile() {
         </div>
 
         <div className="list-group-flex">
-          <div
+          <div className="list-group-container">
+            <div className="category-edit-flex">
+              <p className="category-text">Artists</p>
+              <button type="button" className="btn btn-success btn-edit">
+                <i className="bi bi-pen"></i>
+              </button>
+            </div>
+
+            <div className="list-group user-items">
+              {items.map((item) => {
+                return (
+                  <li
+                    key={
+                      item[
+                        `${selectedCategory}_id` as keyof (
+                          | Artist
+                          | Album
+                          | Track
+                        )
+                      ]
+                    }
+                    className="list-group-item user-item d-flex align-items-center"
+                  >
+                    <div
+                      className="d-flex align-items-center flex-grow-1"
+                      style={{ overflow: "hidden" }}
+                    >
+                      <img
+                        className="item-image"
+                        src={item.image_url || defaultImage}
+                        alt={selectedCategory}
+                      />
+                      <span className="item-text">
+                        {
+                          item[
+                            `${selectedCategory}_name` as keyof (
+                              | Artist
+                              | Album
+                              | Track
+                            )
+                          ]
+                        }
+                      </span>
+                      <div data-bs-theme="dark">
+                        <button
+                          type="button"
+                          className="btn-close item-close"
+                          aria-label="Close"
+                          onClick={() => {
+                            deleteItem(item, `${selectedCategory}`);
+                          }}
+                        ></button>
+                      </div>
+                    </div>
+                  </li>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* <div
             className="list-group-container"
             style={{
               visibility: selectedCategory !== "artist" ? "hidden" : "visible",
@@ -290,9 +362,9 @@ function Profile() {
                 </li>
               ))}
             </div>
-          </div>
+          </div> */}
 
-          <div
+          {/* <div
             className="list-group-container"
             style={{
               visibility: selectedCategory !== "album" ? "hidden" : "visible",
@@ -335,9 +407,9 @@ function Profile() {
                 </li>
               ))}
             </div>
-          </div>
+          </div> */}
 
-          <div
+          {/* <div
             className="list-group-container"
             style={{
               visibility: selectedCategory !== "track" ? "hidden" : "visible",
@@ -380,7 +452,8 @@ function Profile() {
                 </li>
               ))}
             </div>
-          </div>
+            
+          </div> */}
         </div>
       </div>
     </>

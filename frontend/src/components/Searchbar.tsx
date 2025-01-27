@@ -178,9 +178,9 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
             <button
               className="btn btn-outline-success"
               type="button"
-              data-bs-target="#collapseExample"
+              data-bs-target="#collapseId"
               aria-expanded={isDropdownOpen}
-              aria-controls="collapseExample"
+              aria-controls="collapseId"
               onClick={() => {
                 // lock in the search category
                 setSearchCategory(selectedCategory);
@@ -214,10 +214,10 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
               className={`collapse collapse-position ${
                 isDropdownOpen ? "show" : ""
               }`}
-              id="collapseExample"
+              id="collapseId"
               onTransitionEnd={() => {
                 // sync state with bootstrap's collapse behavior
-                const element = document.getElementById("collapseExample");
+                const element = document.getElementById("collapseId");
                 setIsDropdownOpen(element?.classList.contains("show") || false);
               }}
             >
