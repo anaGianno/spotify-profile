@@ -184,14 +184,13 @@ function Profile() {
       <div className="profile-parent">
         <div className="profile-top-container">
           <div className="profile-top" />
-          {/* display image if available */}
+
           {image_url ? (
             <ProfilePicture src={image_url} />
           ) : (
             <div>No image available</div>
           )}
 
-          {/* display username if available */}
           {user_name ? (
             <p className="profile-top-username">{user_name}</p>
           ) : (
@@ -215,13 +214,7 @@ function Profile() {
             checked={selectedCategory === "artist"}
             onChange={() => setSelectedCategory("artist")}
           />
-          <label
-            className="btn btn-outline-success"
-            htmlFor="btnradio1"
-            // onClick={() => {
-            //   setSelectedCategory("artist");
-            // }}
-          >
+          <label className="btn btn-outline-success" htmlFor="btnradio1">
             Artist
           </label>
 
@@ -234,13 +227,7 @@ function Profile() {
             checked={selectedCategory === "album"}
             onChange={() => setSelectedCategory("album")}
           />
-          <label
-            className="btn btn-outline-success"
-            htmlFor="btnradio2"
-            // onClick={() => {
-            //   setSelectedCategory("album");
-            // }}
-          >
+          <label className="btn btn-outline-success" htmlFor="btnradio2">
             Album
           </label>
 
@@ -253,13 +240,7 @@ function Profile() {
             checked={selectedCategory === "track"}
             onChange={() => setSelectedCategory("track")}
           />
-          <label
-            className="btn btn-outline-success"
-            htmlFor="btnradio3"
-            // onClick={() => {
-            //   setSelectedCategory("track");
-            // }}
-          >
+          <label className="btn btn-outline-success" htmlFor="btnradio3">
             Track
           </label>
         </div>
@@ -272,7 +253,13 @@ function Profile() {
               display: selectedCategory !== "artist" ? "none" : "block",
             }}
           >
-            <p className="category-text">Artists</p>
+            <div className="category-edit-flex">
+              <p className="category-text">Artists</p>
+              <button type="button" className="btn btn-success btn-edit">
+                <i className="bi bi-pen"></i>
+              </button>
+            </div>
+
             <div className="list-group user-items">
               {userArtists.map((artist) => (
                 <li
@@ -312,7 +299,12 @@ function Profile() {
               display: selectedCategory !== "album" ? "none" : "block",
             }}
           >
-            <p className="category-text">Albums</p>
+            <div className="category-edit-flex">
+              <p className="category-text">Albums</p>
+              <button type="button" className="btn btn-success btn-edit">
+                <i className="bi bi-pen"></i>
+              </button>
+            </div>
             <div className="list-group user-items">
               {userAlbums.map((album) => (
                 <li
@@ -352,7 +344,12 @@ function Profile() {
               display: selectedCategory !== "track" ? "none" : "block",
             }}
           >
-            <p>Tracks</p>
+            <div className="category-edit-flex">
+              <p className="category-text">Tracks</p>
+              <button type="button" className="btn btn-success btn-edit">
+                <i className="bi bi-pen"></i>
+              </button>
+            </div>
             <div className="list-group user-items">
               {userTracks.map((track) => (
                 <li
