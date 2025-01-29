@@ -4,13 +4,15 @@ import defaultImage from "../assets/defaultPicture.png";
 
 interface SearchbarProps {
   triggerUpdate: () => void;
+  editCategory: "artist" | "album" | "track";
+  modalIsClosed: true | false;
 }
 
-const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
-  let categories = ["track", "artist", "album"];
-  // set default category to track
-  const [selectedCategory, setSelectedCategory] = useState("track");
-  const [searchCategory, setSearchCategory] = useState("track");
+const Searchbar = ({
+  triggerUpdate,
+  editCategory,
+  modalIsClosed,
+}: SearchbarProps) => {
   // set dropdown default to closed
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   // set deafult search query as empty
@@ -21,20 +23,26 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
     (Artist | Album | Track)[]
   >([]);
 
-  const onSearch = async () => {
+  // use default parameter:
+  const onSearch = async (onSearchQuery = query) => {
     // clear previous search results
     setSearchResults([]);
 
     // open dropdown when search button is clicked
     setIsDropdownOpen(true);
-    console.log("Query:", query);
-    console.log("Category:", selectedCategory);
+    console.log("Query:", onSearchQuery);
+    console.log("Category:", editCategory);
 
-    // fetch spotify response using query and selectedCategory
+    if (onSearchQuery === "") {
+      console.log("Empty query, returning");
+      return;
+    }
+
+    // fetch spotify response using query and editCategory
     const searchResponse = await fetch(
       `http://localhost:3000/spotify/search?query=${encodeURIComponent(
-        query
-      )}&type=${selectedCategory}`,
+        onSearchQuery
+      )}&type=${editCategory}`,
       {
         method: "GET",
       }
@@ -82,6 +90,16 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
     };
   }, []);
 
+  // useEffect(() => {
+  //   setSearchResults([]);
+  //   setQuery("");
+  // }, [editCategory]);
+
+  useEffect(() => {
+    setSearchResults([]);
+    setQuery("");
+  }, [modalIsClosed]);
+
   // initialize profile ID from URL
   const params = useParams<{ profileId: string }>();
   const profile_id = params.profileId;
@@ -94,7 +112,7 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
     }
 
     // dynamically set the key name based on the type
-    const keyName = `${selectedCategory}_user_id`;
+    const keyName = `${editCategory}_user_id`;
 
     // attach the dynamic key to the selected item
     const itemWithProfile = { ...item, [keyName]: profile_id };
@@ -104,7 +122,7 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
     try {
       // add item to database
       const response = await fetch(
-        `http://localhost:3000/${encodeURIComponent(selectedCategory)}`,
+        `http://localhost:3000/${encodeURIComponent(editCategory)}`,
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -128,8 +146,7 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
   return (
     <nav className="navbar searchbar" data-bs-theme="dark">
       <div className="container-fluid d-flex justify-content-start">
-        <div className="dropdown me-2">
-          {/* category button */}
+        {/* <div className="dropdown me-2">
           <button
             className="btn btn-success dropdown-toggle"
             type="button"
@@ -137,21 +154,20 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
             aria-expanded="false"
             style={{ width: "100px" }}
           >
-            {selectedCategory}
+            {editCategory}
           </button>
-          {/* category dropdown */}
           <ul className="dropdown-menu">
             {categories.map((category) => (
               <li key={category}>
                 <a
                   className={
-                    selectedCategory === category
+                    editCategory === category
                       ? "dropdown-item active"
                       : "dropdown-item"
                   }
                   href="#"
                   onClick={() => {
-                    setSelectedCategory(category);
+                    seteditCategory(category);
                   }}
                 >
                   {category}
@@ -159,23 +175,21 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
               </li>
             ))}
           </ul>
-        </div>
+        </div> */}
 
         {/* track the dropdown and the search button */}
-        <div ref={dropdownRef}>
-          <form
+        <div className="searches-container" ref={dropdownRef}>
+          {/* <form
             className="d-flex position-relative"
             role="search"
             onSubmit={(e) => {
               // prevent page refresh
               e.preventDefault();
               // lock in the search category
-              setSearchCategory(selectedCategory);
               onSearch();
             }}
-          >
-            {/* search button */}
-            <button
+          > */}
+          {/* <button
               className="btn btn-outline-success"
               type="button"
               data-bs-target="#collapseId"
@@ -183,29 +197,29 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
               aria-controls="collapseId"
               onClick={() => {
                 // lock in the search category
-                setSearchCategory(selectedCategory);
                 onSearch();
               }}
             >
               Search
-            </button>
-            {/* searchbar */}
+            </button> */}
+          {/* searchbar */}
+          <div className="dropdown-wrapper">
             <input
               className="form-control me-2"
               type="search"
-              placeholder="Search"
+              placeholder={`Search for ${editCategory}`}
               aria-label="Search"
               value={query}
-              onChange={(e) => setQuery(e.target.value)}
+              onChange={(e) => {
+                setQuery(e.target.value);
+                // pass query directly to onSearch to avoid asynchronous state update
+                onSearch(e.target.value);
+              }}
               onFocus={() => {
                 if (searchResults.length > 0) {
                   // only display dropdown if there are results
                   setIsDropdownOpen(true);
                 }
-              }}
-              style={{
-                width: "436.3px",
-                marginLeft: "8px",
               }}
             />
             {/* results collapse */}
@@ -221,7 +235,7 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
                 setIsDropdownOpen(element?.classList.contains("show") || false);
               }}
             >
-              <div className="list-group">
+              <div className="list-group list-group-search">
                 {/* display all results */}
                 {searchResults.map((result) => {
                   return (
@@ -229,17 +243,10 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
                     <li
                       key={
                         result[
-                          `${searchCategory}_id` as keyof (
-                            | Artist
-                            | Album
-                            | Track
-                          )
+                          `${editCategory}_id` as keyof (Artist | Album | Track)
                         ]
                       }
-                      className="list-group-item d-flex align-items-center"
-                      style={{
-                        width: "436.3px",
-                      }}
+                      className="list-group-item d-flex align-items-center search-item"
                     >
                       <div
                         className="d-flex align-items-center flex-grow-1"
@@ -257,7 +264,7 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
                         <span className="item-text">
                           {
                             result[
-                              `${searchCategory}_name` as keyof (
+                              `${editCategory}_name` as keyof (
                                 | Artist
                                 | Album
                                 | Track
@@ -266,7 +273,7 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
                           }
                         </span>
                       </div>
-                      <a
+                      {/* <a
                         className="badge text-bg-success ms-auto"
                         href="#"
                         style={{
@@ -279,13 +286,21 @@ const Searchbar = ({ triggerUpdate }: SearchbarProps) => {
                         }}
                       >
                         Add to profile
-                      </a>
+                      </a> */}
+                      <i
+                        className="bi bi-plus-circle"
+                        onClick={(e) => {
+                          e.preventDefault();
+                          selectItem(result);
+                        }}
+                      />
                     </li>
                   );
                 })}
               </div>
             </div>
-          </form>
+          </div>
+          {/* </form> */}
         </div>
       </div>
     </nav>

@@ -23,7 +23,9 @@ function Profile() {
   // initialize trigger for getting user data
   const [shouldFetchUserData, setShouldFetchUserData] = useState(false);
 
-  const [selectedCategory, setSelectedCategory] = useState("artist");
+  const [selectedCategory, setSelectedCategory] = useState<
+    "artist" | "album" | "track"
+  >("artist");
 
   const capitalizedSelectedCategory = `user${
     selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)
@@ -37,10 +39,44 @@ function Profile() {
 
   const items = data[capitalizedSelectedCategory as keyof typeof data] || [];
 
+  const [isModalClosed, setIsModalClosed] = useState(true);
+
   // get user and profile data on initial load
   useEffect(() => {
     handleProfile();
     setShouldFetchUserData(true);
+
+    const modalElement = document.getElementById("exampleModal");
+
+    // Add event listener for when the modal is hidden
+    const handleModalHidden = () => {
+      setIsModalClosed(true);
+      console.log("closed?: true");
+      // Add your logic here (e.g., reset state, fetch data, etc.)
+    };
+
+    if (modalElement) {
+      modalElement.addEventListener("hidden.bs.modal", handleModalHidden);
+    }
+
+    // Add event listener for when the modal is hidden
+    const handleModalShown = () => {
+      setIsModalClosed(false);
+      console.log("closed?: false");
+      // Add your logic here (e.g., reset state, fetch data, etc.)
+    };
+
+    if (modalElement) {
+      modalElement.addEventListener("shown.bs.modal", handleModalShown);
+    }
+
+    // Cleanup the event listener when the component unmounts
+    return () => {
+      if (modalElement) {
+        modalElement.removeEventListener("hidden.bs.modal", handleModalHidden);
+        modalElement.removeEventListener("shown.bs.modal", handleModalShown);
+      }
+    };
   }, []);
 
   // get user data whenever a new item is added to the database
@@ -210,8 +246,6 @@ function Profile() {
           )}
         </div>
 
-        {/* searchbar that gets user data when a new item is added */}
-        {/* <Searchbar triggerUpdate={() => setShouldFetchUserData(true)} /> */}
         <div
           className="btn-group category-select"
           role="group"
@@ -261,7 +295,12 @@ function Profile() {
           <div className="list-group-container">
             <div className="category-edit-flex">
               <p className="category-text">Artists</p>
-              <button type="button" className="btn btn-success btn-edit">
+              <button
+                type="button"
+                className="btn btn-success btn-edit"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+              >
                 <i className="bi bi-pen"></i>
               </button>
             </div>
@@ -301,20 +340,112 @@ function Profile() {
                           ]
                         }
                       </span>
-                      <div data-bs-theme="dark">
-                        <button
-                          type="button"
-                          className="btn-close item-close"
-                          aria-label="Close"
-                          onClick={() => {
-                            deleteItem(item, `${selectedCategory}`);
-                          }}
-                        ></button>
-                      </div>
                     </div>
                   </li>
                 );
               })}
+            </div>
+          </div>
+
+          <div
+            className="modal fade"
+            id="exampleModal"
+            tab-index="-1"
+            aria-labelledby="exampleModalLabel"
+            aria-hidden="true"
+          >
+            <div className="modal-dialog edit-modal-dialog">
+              <div className="modal-content edit-modal-content">
+                <div className="modal-header edit-modal-header">
+                  <p className="modal-title fs-5" id="exampleModalLabel">
+                    {`Edit ${selectedCategory}`}
+                  </p>
+                  <div data-bs-theme="dark">
+                    <button
+                      type="button"
+                      className="btn-close edit-btn-close"
+                      data-bs-dismiss="modal"
+                      aria-label="Close"
+                    ></button>
+                  </div>
+                </div>
+                <div className="modal-body">
+                  {/* searchbar that gets user data when a new item is added */}
+                  <Searchbar
+                    triggerUpdate={() => setShouldFetchUserData(true)}
+                    editCategory={selectedCategory}
+                    modalIsClosed={isModalClosed}
+                  />
+                  <div className="list-group user-items">
+                    {items.map((item) => {
+                      return (
+                        <li
+                          key={
+                            item[
+                              `${selectedCategory}_id` as keyof (
+                                | Artist
+                                | Album
+                                | Track
+                              )
+                            ]
+                          }
+                          className="list-group-item user-item d-flex align-items-center"
+                        >
+                          <div
+                            className="d-flex align-items-center flex-grow-1"
+                            style={{ overflow: "hidden" }}
+                          >
+                            <img
+                              className="item-image"
+                              src={item.image_url || defaultImage}
+                              alt={selectedCategory}
+                            />
+                            <span className="item-text">
+                              {
+                                item[
+                                  `${selectedCategory}_name` as keyof (
+                                    | Artist
+                                    | Album
+                                    | Track
+                                  )
+                                ]
+                              }
+                            </span>
+                            {/* <div data-bs-theme="dark">
+                              <button
+                                type="button"
+                                className="btn-close item-close"
+                                aria-label="Close"
+                                onClick={() => {
+                                  deleteItem(item, `${selectedCategory}`);
+                                }}
+                              ></button>
+                            </div> */}
+                            <i
+                              className="bi bi-x-circle"
+                              onClick={() => {
+                                deleteItem(item, `${selectedCategory}`);
+                              }}
+                            ></i>
+                          </div>
+                        </li>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="modal-footer edit-modal-footer">
+                  <button
+                    type="button"
+                    className="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                  <button type="button" className="btn btn-success">
+                    Save changes
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
 
