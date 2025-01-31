@@ -6,6 +6,8 @@ import Searchbar from "../components/Searchbar";
 
 import defaultImage from "../assets/defaultPicture.png";
 
+import React from "react";
+
 function Profile() {
   // initialize image and username in null state
   const [image_url, setImage_url] = useState(null);
@@ -46,7 +48,7 @@ function Profile() {
     handleProfile();
     setShouldFetchUserData(true);
 
-    const modalElement = document.getElementById("exampleModal");
+    const modalElement = document.getElementById("editModal");
 
     // Add event listener for when the modal is hidden
     const handleModalHidden = () => {
@@ -299,7 +301,7 @@ function Profile() {
                 type="button"
                 className="btn btn-success btn-edit"
                 data-bs-toggle="modal"
-                data-bs-target="#exampleModal"
+                data-bs-target="#editModal"
               >
                 <i className="bi bi-pen"></i>
               </button>
@@ -308,7 +310,7 @@ function Profile() {
             <div className="list-group user-items">
               {items.map((item) => {
                 return (
-                  <li
+                  <React.Fragment
                     key={
                       item[
                         `${selectedCategory}_id` as keyof (
@@ -318,30 +320,168 @@ function Profile() {
                         )
                       ]
                     }
-                    className="list-group-item user-item d-flex align-items-center"
                   >
-                    <div
-                      className="d-flex align-items-center flex-grow-1"
-                      style={{ overflow: "hidden" }}
+                    <li
+                      key={
+                        item[
+                          `${selectedCategory}_id` as keyof (
+                            | Artist
+                            | Album
+                            | Track
+                          )
+                        ]
+                      }
+                      className="list-group-item user-item d-flex align-items-center"
+                      data-bs-toggle="modal"
+                      data-bs-target={`#${
+                        item[
+                          `${selectedCategory}_id` as keyof (
+                            | Artist
+                            | Album
+                            | Track
+                          )
+                        ]
+                      }`}
                     >
-                      <img
-                        className="item-image"
-                        src={item.image_url || defaultImage}
-                        alt={selectedCategory}
-                      />
-                      <span className="item-text">
-                        {
-                          item[
-                            `${selectedCategory}_name` as keyof (
-                              | Artist
-                              | Album
-                              | Track
-                            )
-                          ]
-                        }
-                      </span>
+                      <div
+                        className="d-flex align-items-center flex-grow-1"
+                        style={{ overflow: "hidden" }}
+                      >
+                        <img
+                          className="item-image"
+                          src={item.image_url || defaultImage}
+                          alt={selectedCategory}
+                        />
+                        <span className="item-text">
+                          {
+                            item[
+                              `${selectedCategory}_name` as keyof (
+                                | Artist
+                                | Album
+                                | Track
+                              )
+                            ]
+                          }
+                        </span>
+                      </div>
+                    </li>
+                    <div
+                      className="modal fade"
+                      id={`${
+                        item[
+                          `${selectedCategory}_id` as keyof (
+                            | Artist
+                            | Album
+                            | Track
+                          )
+                        ]
+                      }`}
+                      aria-labelledby={
+                        item[
+                          `${selectedCategory}_id_label` as keyof (
+                            | Artist
+                            | Album
+                            | Track
+                          )
+                        ]
+                      }
+                      aria-hidden="true"
+                    >
+                      <div className="modal-dialog profile-modal-dialog">
+                        <div className="modal-content profile-modal-content">
+                          <div className="modal-header profile-modal-header">
+                            <h1
+                              className="modal-title fs-5"
+                              id="staticBackdropLabel"
+                            ></h1>
+                            <div data-bs-theme="dark">
+                              <button
+                                type="button"
+                                className="btn-close edit-btn-close"
+                                data-bs-dismiss="modal"
+                                aria-label="Close"
+                              ></button>
+                            </div>
+                          </div>
+                          <div className="modal-body">
+                            {"track_id" in item ? (
+                              <>
+                                <img
+                                  className="modal-image"
+                                  src={item.image_url || defaultImage}
+                                  alt={selectedCategory}
+                                />
+                                <div className="details-container">
+                                  <p>{item[`track_name` as keyof Track]}</p>
+                                  <p>{item[`artist_name` as keyof Track]}</p>
+                                  <p>{item[`duration` as keyof Track]}</p>
+                                </div>
+                              </>
+                            ) : "album_id" in item ? (
+                              <>
+                                <div className="details-container">
+                                  <img
+                                    className="modal-image"
+                                    src={item.image_url || defaultImage}
+                                    alt={selectedCategory}
+                                  />
+                                  <div className="text-container">
+                                    <p>
+                                      {
+                                        item[
+                                          `${selectedCategory}_name` as keyof Album
+                                        ]
+                                      }
+                                    </p>
+                                    <p>
+                                      {
+                                        item[
+                                          `${selectedCategory}_release_date` as keyof Album
+                                        ]
+                                      }
+                                    </p>
+                                    <p>{item[`total_tracks` as keyof Album]}</p>
+                                    <p>{item[`artist_name` as keyof Album]}</p>
+                                  </div>
+                                </div>
+                              </>
+                            ) : "artist_id" in item ? (
+                              <>
+                                <img
+                                  className="modal-image"
+                                  src={item.image_url || defaultImage}
+                                  alt={selectedCategory}
+                                />
+                                <div className="details-container">
+                                  <p>
+                                    {
+                                      item[
+                                        `${selectedCategory}_name` as keyof Artist
+                                      ]
+                                    }
+                                  </p>
+                                </div>
+                              </>
+                            ) : (
+                              <p>Unknown item type</p>
+                            )}
+                          </div>
+                          {/* <div className="modal-footer profile-modal-footer">
+                            <button
+                              type="button"
+                              className="btn btn-secondary"
+                              data-bs-dismiss="modal"
+                            >
+                              Close
+                            </button>
+                            <button type="button" className="btn btn-success">
+                              Save changes
+                            </button>
+                          </div> */}
+                        </div>
+                      </div>
                     </div>
-                  </li>
+                  </React.Fragment>
                 );
               })}
             </div>
@@ -349,15 +489,15 @@ function Profile() {
 
           <div
             className="modal fade"
-            id="exampleModal"
+            id="editModal"
             tab-index="-1"
-            aria-labelledby="exampleModalLabel"
+            aria-labelledby="editModalLabel"
             aria-hidden="true"
           >
             <div className="modal-dialog edit-modal-dialog">
               <div className="modal-content edit-modal-content">
                 <div className="modal-header edit-modal-header">
-                  <p className="modal-title fs-5" id="exampleModalLabel">
+                  <p className="modal-title fs-5" id="editModalLabel">
                     {`Edit ${selectedCategory}`}
                   </p>
                   <div data-bs-theme="dark">
@@ -411,16 +551,6 @@ function Profile() {
                                 ]
                               }
                             </span>
-                            {/* <div data-bs-theme="dark">
-                              <button
-                                type="button"
-                                className="btn-close item-close"
-                                aria-label="Close"
-                                onClick={() => {
-                                  deleteItem(item, `${selectedCategory}`);
-                                }}
-                              ></button>
-                            </div> */}
                             <i
                               className="bi bi-x-circle"
                               onClick={() => {
@@ -433,7 +563,7 @@ function Profile() {
                     })}
                   </div>
                 </div>
-                <div className="modal-footer edit-modal-footer">
+                {/* <div className="modal-footer edit-modal-footer">
                   <button
                     type="button"
                     className="btn btn-secondary"
@@ -444,147 +574,10 @@ function Profile() {
                   <button type="button" className="btn btn-success">
                     Save changes
                   </button>
-                </div>
+                </div> */}
               </div>
             </div>
           </div>
-
-          {/* <div
-            className="list-group-container"
-            style={{
-              visibility: selectedCategory !== "artist" ? "hidden" : "visible",
-              display: selectedCategory !== "artist" ? "none" : "block",
-            }}
-          >
-            <div className="category-edit-flex">
-              <p className="category-text">Artists</p>
-              <button type="button" className="btn btn-success btn-edit">
-                <i className="bi bi-pen"></i>
-              </button>
-            </div>
-
-            <div className="list-group user-items">
-              {userArtists.map((artist) => (
-                <li
-                  key={artist.artist_id}
-                  className="list-group-item user-item d-flex align-items-center"
-                >
-                  <div
-                    className="d-flex align-items-center flex-grow-1"
-                    style={{ overflow: "hidden" }}
-                  >
-                    <img
-                      className="item-image"
-                      src={artist.image_url || defaultImage}
-                      alt="Artist"
-                    />
-                    <span className="item-text">{artist.artist_name}</span>
-                    <div data-bs-theme="dark">
-                      <button
-                        type="button"
-                        className="btn-close item-close"
-                        aria-label="Close"
-                        onClick={() => {
-                          deleteItem(artist, "artist");
-                        }}
-                      ></button>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </div>
-          </div> */}
-
-          {/* <div
-            className="list-group-container"
-            style={{
-              visibility: selectedCategory !== "album" ? "hidden" : "visible",
-              display: selectedCategory !== "album" ? "none" : "block",
-            }}
-          >
-            <div className="category-edit-flex">
-              <p className="category-text">Albums</p>
-              <button type="button" className="btn btn-success btn-edit">
-                <i className="bi bi-pen"></i>
-              </button>
-            </div>
-            <div className="list-group user-items">
-              {userAlbums.map((album) => (
-                <li
-                  key={album.album_id}
-                  className="list-group-item user-item d-flex align-items-center"
-                >
-                  <div
-                    className="d-flex align-items-center flex-grow-1"
-                    style={{ overflow: "hidden" }}
-                  >
-                    <img
-                      className="item-image"
-                      src={album.image_url || defaultImage}
-                      alt="Album"
-                    />
-                    <span className="item-text">{album.album_name}</span>
-                    <div data-bs-theme="dark">
-                      <button
-                        type="button"
-                        className="btn-close item-close"
-                        aria-label="Close"
-                        onClick={() => {
-                          deleteItem(album, "album");
-                        }}
-                      ></button>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </div>
-          </div> */}
-
-          {/* <div
-            className="list-group-container"
-            style={{
-              visibility: selectedCategory !== "track" ? "hidden" : "visible",
-              display: selectedCategory !== "track" ? "none" : "block",
-            }}
-          >
-            <div className="category-edit-flex">
-              <p className="category-text">Tracks</p>
-              <button type="button" className="btn btn-success btn-edit">
-                <i className="bi bi-pen"></i>
-              </button>
-            </div>
-            <div className="list-group user-items">
-              {userTracks.map((track) => (
-                <li
-                  key={track.track_id}
-                  className="list-group-item user-item d-flex align-items-center"
-                >
-                  <div
-                    className="d-flex align-items-center flex-grow-1"
-                    style={{ overflow: "hidden" }}
-                  >
-                    <img
-                      className="item-image"
-                      src={track.image_url || defaultImage}
-                      alt="Track"
-                    />
-                    <span className="item-text">{track.track_name}</span>
-                    <div data-bs-theme="dark">
-                      <button
-                        type="button"
-                        className="btn-close item-close"
-                        aria-label="Close"
-                        onClick={() => {
-                          deleteItem(track, "track");
-                        }}
-                      ></button>
-                    </div>
-                  </div>
-                </li>
-              ))}
-            </div>
-            
-          </div> */}
         </div>
       </div>
     </>

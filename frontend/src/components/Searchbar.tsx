@@ -4,7 +4,9 @@ import defaultImage from "../assets/defaultPicture.png";
 
 interface SearchbarProps {
   triggerUpdate: () => void;
+  // pass in category from profile
   editCategory: "artist" | "album" | "track";
+  // pass in the modal bool from profile
   modalIsClosed: true | false;
 }
 
@@ -33,6 +35,7 @@ const Searchbar = ({
     console.log("Query:", onSearchQuery);
     console.log("Category:", editCategory);
 
+    // return early on an empty query
     if (onSearchQuery === "") {
       console.log("Empty query, returning");
       return;
@@ -90,11 +93,6 @@ const Searchbar = ({
     };
   }, []);
 
-  // useEffect(() => {
-  //   setSearchResults([]);
-  //   setQuery("");
-  // }, [editCategory]);
-
   useEffect(() => {
     setSearchResults([]);
     setQuery("");
@@ -146,68 +144,14 @@ const Searchbar = ({
   return (
     <nav className="navbar searchbar" data-bs-theme="dark">
       <div className="container-fluid d-flex justify-content-start">
-        {/* <div className="dropdown me-2">
-          <button
-            className="btn btn-success dropdown-toggle"
-            type="button"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            style={{ width: "100px" }}
-          >
-            {editCategory}
-          </button>
-          <ul className="dropdown-menu">
-            {categories.map((category) => (
-              <li key={category}>
-                <a
-                  className={
-                    editCategory === category
-                      ? "dropdown-item active"
-                      : "dropdown-item"
-                  }
-                  href="#"
-                  onClick={() => {
-                    seteditCategory(category);
-                  }}
-                >
-                  {category}
-                </a>
-              </li>
-            ))}
-          </ul>
-        </div> */}
-
-        {/* track the dropdown and the search button */}
+        {/* track the dropdown*/}
         <div className="searches-container" ref={dropdownRef}>
-          {/* <form
-            className="d-flex position-relative"
-            role="search"
-            onSubmit={(e) => {
-              // prevent page refresh
-              e.preventDefault();
-              // lock in the search category
-              onSearch();
-            }}
-          > */}
-          {/* <button
-              className="btn btn-outline-success"
-              type="button"
-              data-bs-target="#collapseId"
-              aria-expanded={isDropdownOpen}
-              aria-controls="collapseId"
-              onClick={() => {
-                // lock in the search category
-                onSearch();
-              }}
-            >
-              Search
-            </button> */}
           {/* searchbar */}
           <div className="dropdown-wrapper">
-            <input
+            {/* <input
               className="form-control me-2"
               type="search"
-              placeholder={`Search for ${editCategory}`}
+              placeholder={`&#xF52A; Search for ${editCategory}`}
               aria-label="Search"
               value={query}
               onChange={(e) => {
@@ -221,7 +165,30 @@ const Searchbar = ({
                   setIsDropdownOpen(true);
                 }
               }}
-            />
+            /> */}
+            <div className="position-relative">
+              <i className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2"></i>
+              <input
+                className="form-control"
+                style={{ paddingLeft: "30px" }}
+                type="search"
+                placeholder={`Search for ${editCategory}`}
+                aria-label="Search"
+                value={query}
+                onChange={(e) => {
+                  setQuery(e.target.value);
+                  // pass query directly to onSearch to avoid asynchronous state update
+                  onSearch(e.target.value);
+                }}
+                onFocus={() => {
+                  if (searchResults.length > 0) {
+                    // only display dropdown if there are results
+                    setIsDropdownOpen(true);
+                  }
+                }}
+              />
+            </div>
+
             {/* results collapse */}
             <div
               // display results based on state
@@ -273,20 +240,6 @@ const Searchbar = ({
                           }
                         </span>
                       </div>
-                      {/* <a
-                        className="badge text-bg-success ms-auto"
-                        href="#"
-                        style={{
-                          whiteSpace: "nowrap",
-                          textDecoration: "none",
-                        }}
-                        onClick={(e) => {
-                          e.preventDefault();
-                          selectItem(result);
-                        }}
-                      >
-                        Add to profile
-                      </a> */}
                       <i
                         className="bi bi-plus-circle"
                         onClick={(e) => {
@@ -300,7 +253,6 @@ const Searchbar = ({
               </div>
             </div>
           </div>
-          {/* </form> */}
         </div>
       </div>
     </nav>
