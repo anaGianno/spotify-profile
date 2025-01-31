@@ -36,12 +36,25 @@ const addTrack = async (req, res) => {
       duration,
       image_url,
       track_user_id,
+      track_release_date,
+      album_type,
+      album_name,
     } = req.body;
 
     // add track
     const trackResponse = await database.query(
-      "INSERT INTO track (track_id,track_name,artist_name,duration,image_url,track_user_id) VALUES($1,$2,$3,$4,$5,$6) RETURNING *",
-      [track_id, track_name, artist_name, duration, image_url, track_user_id]
+      "INSERT INTO track (track_id,track_name,artist_name,duration,image_url,track_user_id,track_release_date,album_type,album_name) VALUES($1,$2,$3,$4,$5,$6,$7,$8,$9) RETURNING *",
+      [
+        track_id,
+        track_name,
+        artist_name,
+        duration,
+        image_url,
+        track_user_id,
+        track_release_date,
+        album_type,
+        album_name,
+      ]
     );
 
     res.json(trackResponse.rows[0]);

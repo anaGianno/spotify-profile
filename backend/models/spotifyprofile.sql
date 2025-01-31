@@ -12,14 +12,18 @@ CREATE TABLE track(
  artist_name VARCHAR(255),
  duration VARCHAR(5),
  image_url VARCHAR(255),
- track_user_id VARCHAR(255) REFERENCES user_(user_id)
+ track_user_id VARCHAR(255) REFERENCES user_(user_id),
+ track_release_date VARCHAR(22),
+ track_type VARCHAR(11)
 );
 
 CREATE TABLE artist(
  artist_id VARCHAR(22) PRIMARY KEY,
  artist_name VARCHAR(255),
  image_url VARCHAR(255),
- artist_user_id VARCHAR(255) REFERENCES user_(user_id)
+ artist_user_id VARCHAR(255) REFERENCES user_(user_id),
+ genres VARCHAR[],
+ followers integer,
 );
 
 CREATE TABLE album(

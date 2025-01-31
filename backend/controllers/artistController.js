@@ -29,12 +29,19 @@ const getUserArtists = async (req, res) => {
 const addArtist = async (req, res) => {
   try {
     // get artist parameters from request
-    const { artist_id, artist_name, image_url, artist_user_id } = req.body;
+    const {
+      artist_id,
+      artist_name,
+      image_url,
+      artist_user_id,
+      genres,
+      followers,
+    } = req.body;
 
     // add artist into database
     const newArtist = await database.query(
-      "INSERT INTO artist (artist_id,artist_name,image_url,artist_user_id) VALUES($1,$2,$3,$4) RETURNING *",
-      [artist_id, artist_name, image_url, artist_user_id]
+      "INSERT INTO artist (artist_id,artist_name,image_url,artist_user_id,genres,followers) VALUES($1,$2,$3,$4,$5,$6) RETURNING *",
+      [artist_id, artist_name, image_url, artist_user_id, genres, followers]
     );
 
     res.json(newArtist.rows[0]);

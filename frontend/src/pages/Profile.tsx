@@ -296,7 +296,7 @@ function Profile() {
         <div className="list-group-flex">
           <div className="list-group-container">
             <div className="category-edit-flex">
-              <p className="category-text">Artists</p>
+              <p className="category-text">{selectedCategory}</p>
               <button
                 type="button"
                 className="btn btn-success btn-edit"
@@ -365,6 +365,7 @@ function Profile() {
                         </span>
                       </div>
                     </li>
+
                     <div
                       className="modal fade"
                       id={`${
@@ -466,18 +467,6 @@ function Profile() {
                               <p>Unknown item type</p>
                             )}
                           </div>
-                          {/* <div className="modal-footer profile-modal-footer">
-                            <button
-                              type="button"
-                              className="btn btn-secondary"
-                              data-bs-dismiss="modal"
-                            >
-                              Close
-                            </button>
-                            <button type="button" className="btn btn-success">
-                              Save changes
-                            </button>
-                          </div> */}
                         </div>
                       </div>
                     </div>
@@ -563,18 +552,6 @@ function Profile() {
                     })}
                   </div>
                 </div>
-                {/* <div className="modal-footer edit-modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Close
-                  </button>
-                  <button type="button" className="btn btn-success">
-                    Save changes
-                  </button>
-                </div> */}
               </div>
             </div>
           </div>

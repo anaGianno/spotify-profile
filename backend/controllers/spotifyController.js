@@ -60,11 +60,15 @@ const searchSpotify = async (req, res) => {
         const artist_id = artist.id;
         const artist_name = artist.name || "Unknown Artist"; // get the first artist's name
         const image_url = artist.images[0]?.url || "No Image Available"; // get the third image URL
+        const genres = artist.genres;
+        const followers = artist.followers.total;
         // combine the data into an object and add it to the formattedResponse array
         formattedResponse.push({
           artist_id,
           artist_name,
           image_url,
+          genres,
+          followers,
         });
       });
     } else if (type === "album") {
@@ -95,7 +99,9 @@ const searchSpotify = async (req, res) => {
         var duration = track.duration_ms;
         duration = millisToMinutesAndSeconds(duration);
         const image_url = track.album.images[0]?.url || "No Image Available"; // get the first image URL
-
+        const track_release_date = track.album.release_date;
+        const album_type = track.album.type;
+        const album_name = track.album.name;
         // combine the data into an object and add it to the formattedResponse array
         formattedResponse.push({
           track_id,
@@ -103,6 +109,9 @@ const searchSpotify = async (req, res) => {
           artist_name,
           duration,
           image_url,
+          track_release_date,
+          album_type,
+          album_name,
         });
       });
     }
