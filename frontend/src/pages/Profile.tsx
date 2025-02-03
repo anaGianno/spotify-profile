@@ -296,7 +296,10 @@ function Profile() {
         <div className="list-group-flex">
           <div className="list-group-container">
             <div className="category-edit-flex">
-              <p className="category-text">{selectedCategory}</p>
+              <p className="category-text">
+                {selectedCategory.charAt(0).toUpperCase() +
+                  selectedCategory.slice(1)}
+              </p>
               <button
                 type="button"
                 className="btn btn-success btn-edit"
@@ -391,10 +394,12 @@ function Profile() {
                       <div className="modal-dialog profile-modal-dialog">
                         <div className="modal-content profile-modal-content">
                           <div className="modal-header profile-modal-header">
-                            <h1
-                              className="modal-title fs-5"
+                            <p
+                              className="modal-title fs-5 profile-modal-title"
                               id="staticBackdropLabel"
-                            ></h1>
+                            >
+                              Details
+                            </p>
                             <div data-bs-theme="dark">
                               <button
                                 type="button"
@@ -404,7 +409,7 @@ function Profile() {
                               ></button>
                             </div>
                           </div>
-                          <div className="modal-body">
+                          <div className="modal-body modal-body-details">
                             {"track_id" in item ? (
                               <>
                                 <img
@@ -412,37 +417,67 @@ function Profile() {
                                   src={item.image_url || defaultImage}
                                   alt={selectedCategory}
                                 />
-                                <div className="details-container">
-                                  <p>{item[`track_name` as keyof Track]}</p>
-                                  <p>{item[`artist_name` as keyof Track]}</p>
-                                  <p>{item[`duration` as keyof Track]}</p>
+                                <div className="overflow-auto">
+                                  <div className="details-container">
+                                    <p className="details-name">
+                                      {item[`track_name` as keyof Track]}
+                                    </p>
+                                    <h2>Artist</h2>
+                                    <p className="details-text">
+                                      {item[`artist_name` as keyof Track]}
+                                    </p>
+                                    <h2>Duration</h2>
+                                    <p className="details-text">
+                                      {item[`duration` as keyof Track]}
+                                    </p>
+                                    <h2>Release Date</h2>
+                                    <p className="details-text">
+                                      {
+                                        item[
+                                          `track_release_date` as keyof Track
+                                        ]
+                                      }
+                                    </p>
+
+                                    <h2>From</h2>
+                                    <p className="details-text">
+                                      {item[`album_name` as keyof Track]}
+                                    </p>
+                                  </div>
                                 </div>
                               </>
                             ) : "album_id" in item ? (
                               <>
+                                <img
+                                  className="modal-image"
+                                  src={item.image_url || defaultImage}
+                                  alt={selectedCategory}
+                                />
                                 <div className="details-container">
-                                  <img
-                                    className="modal-image"
-                                    src={item.image_url || defaultImage}
-                                    alt={selectedCategory}
-                                  />
                                   <div className="text-container">
-                                    <p>
+                                    <p className="details-name">
                                       {
                                         item[
                                           `${selectedCategory}_name` as keyof Album
                                         ]
                                       }
                                     </p>
-                                    <p>
+                                    <h2>Release Date</h2>
+                                    <p className="details-text">
                                       {
                                         item[
                                           `${selectedCategory}_release_date` as keyof Album
                                         ]
                                       }
                                     </p>
-                                    <p>{item[`total_tracks` as keyof Album]}</p>
-                                    <p>{item[`artist_name` as keyof Album]}</p>
+                                    <h2>Total tracks</h2>
+                                    <p className="details-text">
+                                      {item[`total_tracks` as keyof Album]}
+                                    </p>
+                                    <h2>Artist</h2>
+                                    <p className="details-text">
+                                      {item[`artist_name` as keyof Album]}
+                                    </p>
                                   </div>
                                 </div>
                               </>
@@ -454,12 +489,24 @@ function Profile() {
                                   alt={selectedCategory}
                                 />
                                 <div className="details-container">
-                                  <p>
+                                  <p className="details-name">
                                     {
                                       item[
                                         `${selectedCategory}_name` as keyof Artist
                                       ]
                                     }
+                                  </p>
+                                  <h2>Genre</h2>
+                                  <p className="details-text">
+                                    {(
+                                      item[`genres` as keyof Artist] as string[]
+                                    ).join(", ")}
+                                  </p>
+                                  <h2>Followers</h2>
+                                  <p className="details-text">
+                                    {item[
+                                      "followers" as keyof Artist
+                                    ].toLocaleString()}
                                   </p>
                                 </div>
                               </>
@@ -486,7 +533,10 @@ function Profile() {
             <div className="modal-dialog edit-modal-dialog">
               <div className="modal-content edit-modal-content">
                 <div className="modal-header edit-modal-header">
-                  <p className="modal-title fs-5" id="editModalLabel">
+                  <p
+                    className="modal-title fs-5 profile-modal-title"
+                    id="editModalLabel"
+                  >
                     {`Edit ${selectedCategory}`}
                   </p>
                   <div data-bs-theme="dark">

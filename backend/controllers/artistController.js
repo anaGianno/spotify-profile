@@ -38,10 +38,20 @@ const addArtist = async (req, res) => {
       followers,
     } = req.body;
 
+    const updatedGenres =
+      !genres || genres.length === 0 ? ["not available"] : genres;
+
     // add artist into database
     const newArtist = await database.query(
       "INSERT INTO artist (artist_id,artist_name,image_url,artist_user_id,genres,followers) VALUES($1,$2,$3,$4,$5,$6) RETURNING *",
-      [artist_id, artist_name, image_url, artist_user_id, genres, followers]
+      [
+        artist_id,
+        artist_name,
+        image_url,
+        artist_user_id,
+        updatedGenres,
+        followers,
+      ]
     );
 
     res.json(newArtist.rows[0]);
