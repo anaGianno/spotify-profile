@@ -92,3 +92,18 @@ SELECT * FROM album
 SELECT * FROM user_
 
 ALTER SEQUENCE user_user_id_seq RESTART WITH 1
+
+CREATE OR REPLACE FUNCTION limit_track_rows()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (SELECT COUNT(*) FROM track) >= 10 THEN
+        RAISE EXCEPTION 'Cannot insert more than 10 tracks.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER track_limit_trigger
+BEFORE INSERT ON track
+FOR EACH ROW
+EXECUTE FUNCTION limit_track_rows();

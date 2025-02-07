@@ -33,24 +33,18 @@ interface Album {
   artist_name: string;
 }
 
-//       artist_id,
-//       artist_name,
-//       image_url,
-//       genres,
-//       followers,
+interface User {
+  user_id: string;
+  user_name: string;
+  type_: string;
+  email: string;
+  image_url: string;
+}
 
-//       album_id,
-//       album_name,
-//       album_release_date,
-//       total_tracks,
-//       image_url,
-//       artist_name,
-
-//       track_id,
-//       track_name,
-//       artist_name,
-//       duration,
-//       image_url,
-//       track_release_date,
-//       album_type,
-//       album_name,
+// CREATE TABLE user_(
+//   user_id VARCHAR(255) PRIMARY KEY,
+//   user_name VARCHAR(16),
+//   type_ VARCHAR(16),
+//   email VARCHAR(255),
+//   image_url VARCHAR(255)
+//  );

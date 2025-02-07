@@ -33,6 +33,29 @@ const getUser = async (req, res) => {
   }
 };
 
+const getSearchUser = async (req, res) => {
+  try {
+    const user_name = req.params.username;
+    const search_user_name = `%${user_name}%`;
+    // get user using id
+    const user = await database.query(
+      "SELECT * FROM user_ WHERE user_name LIKE $1",
+      [search_user_name]
+    );
+
+    // return error if user not found
+    if (user.rows[0] == undefined)
+      return res
+        .status(404)
+        .send(`Error: user with username ${user_name} not found`);
+
+    res.send(user.rows);
+  } catch (err) {
+    console.error("Error getting user: ", err.message);
+    return res.status(500).send("Error getting user: " + err.message);
+  }
+};
+
 // add user to database
 const addUser = async (req, res) => {
   try {
@@ -120,6 +143,7 @@ const checkSpotifyEmail = async (req, res) => {
 module.exports = {
   getAllUsers,
   getUser,
+  getSearchUser,
   addUser,
   deleteUser,
   checkSpotifyEmail,

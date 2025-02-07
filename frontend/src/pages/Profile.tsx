@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 
 import ProfilePicture from "../components/ProfilePicture";
 import Searchbar from "../components/Searchbar";
+import Header from "../components/Header";
 
 import defaultImage from "../assets/defaultPicture.png";
 
@@ -54,7 +55,6 @@ function Profile() {
     const handleModalHidden = () => {
       setIsModalClosed(true);
       console.log("closed?: true");
-      // Add your logic here (e.g., reset state, fetch data, etc.)
     };
 
     if (modalElement) {
@@ -65,14 +65,12 @@ function Profile() {
     const handleModalShown = () => {
       setIsModalClosed(false);
       console.log("closed?: false");
-      // Add your logic here (e.g., reset state, fetch data, etc.)
     };
 
     if (modalElement) {
       modalElement.addEventListener("shown.bs.modal", handleModalShown);
     }
 
-    // Cleanup the event listener when the component unmounts
     return () => {
       if (modalElement) {
         modalElement.removeEventListener("hidden.bs.modal", handleModalHidden);
@@ -231,6 +229,7 @@ function Profile() {
   return (
     // display profile
     <>
+      <Header user_name={user_name ?? "Guest"} image_url={image_url ?? ""} />
       <div className="profile-parent">
         <div className="profile-top-container">
           <div className="profile-top" />

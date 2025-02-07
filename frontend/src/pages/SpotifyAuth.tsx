@@ -171,7 +171,15 @@ const SpotifyAuth = () => {
       .replace(/=+$/, "");
   };
 
-  return <div>Loading...</div>;
+  return (
+    <div className="loading">
+      <div className="spinner-border  text-primary" role="status">
+        <span className="visually-hidden " style={{}}>
+          Loading...
+        </span>
+      </div>
+    </div>
+  );
 };
 
 export default SpotifyAuth;

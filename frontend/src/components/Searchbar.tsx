@@ -129,11 +129,19 @@ const Searchbar = ({
         }
       );
 
+      const data = await response.json();
       if (!response.ok) {
         console.error(`Failed to add item: ${response.statusText}`);
+        // display specific error message if it's related to the limit
+        if (data.error === "Track limit reached (10 maximum).") {
+          alert("You can't add more than 10 tracks!");
+        } else {
+          console.error(`Failed to add item: ${data.error}`);
+          alert("An error occurred while adding the item.");
+        }
+        return;
       }
 
-      const data = await response.json();
       console.log("Server response: ", data);
       triggerUpdate();
     } catch (error) {
@@ -142,30 +150,12 @@ const Searchbar = ({
   };
 
   return (
-    <nav className="navbar searchbar" data-bs-theme="dark">
+    <nav className="navbar edit-searchbar" data-bs-theme="dark">
       <div className="container-fluid d-flex justify-content-start">
         {/* track the dropdown*/}
         <div className="searches-container" ref={dropdownRef}>
           {/* searchbar */}
           <div className="dropdown-wrapper">
-            {/* <input
-              className="form-control me-2"
-              type="search"
-              placeholder={`&#xF52A; Search for ${editCategory}`}
-              aria-label="Search"
-              value={query}
-              onChange={(e) => {
-                setQuery(e.target.value);
-                // pass query directly to onSearch to avoid asynchronous state update
-                onSearch(e.target.value);
-              }}
-              onFocus={() => {
-                if (searchResults.length > 0) {
-                  // only display dropdown if there are results
-                  setIsDropdownOpen(true);
-                }
-              }}
-            /> */}
             <div className="position-relative">
               <i className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2"></i>
               <input
@@ -240,13 +230,14 @@ const Searchbar = ({
                           }
                         </span>
                       </div>
-                      <i
+                      <a
                         className="bi bi-plus-circle"
                         onClick={(e) => {
                           e.preventDefault();
                           selectItem(result);
                         }}
                       />
+                      <div id="liveAlertPlaceholder"></div>
                     </li>
                   );
                 })}
