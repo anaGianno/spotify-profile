@@ -229,7 +229,12 @@ function Profile() {
   return (
     // display profile
     <>
-      <Header user_name={user_name ?? "Guest"} image_url={image_url ?? ""} />
+      <Header
+        user_name={user_name}
+        image_url={image_url}
+        profile_id={profile_id ?? null}
+      />
+
       <div className="profile-parent">
         <div className="profile-top-container">
           <div className="profile-top" />

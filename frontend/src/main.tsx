@@ -1,23 +1,30 @@
 // import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
-import App from "./App.tsx";
+
 import "bootstrap/dist/css/bootstrap.css";
 import "bootstrap/dist/css/bootstrap.css"; // Bootstrap CSS
 import "bootstrap/dist/js/bootstrap.bundle.min.js"; // Bootstrap JS bundle (includes Popper.js)
 
 // import router and pages
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import Login from "./pages/Login.tsx";
 import SpotifyAuth from "./pages/SpotifyAuth.tsx";
 import GoogleAuth from "./pages/GoogleAuth.tsx";
 import GoogleProfile from "./pages/GoogleProfile.tsx";
 import Profile from "./pages/Profile.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import Home from "./pages/Home.tsx";
 
 // set all routes to a page
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <App />,
+    element: <Home />,
+    errorElement: <NotFound />,
+  },
+  {
+    path: "/login",
+    element: <Login />,
     errorElement: <NotFound />,
   },
   {

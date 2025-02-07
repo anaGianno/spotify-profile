@@ -40,11 +40,3 @@ interface User {
   email: string;
   image_url: string;
 }
-
-// CREATE TABLE user_(
-//   user_id VARCHAR(255) PRIMARY KEY,
-//   user_name VARCHAR(16),
-//   type_ VARCHAR(16),
-//   email VARCHAR(255),
-//   image_url VARCHAR(255)
-//  );

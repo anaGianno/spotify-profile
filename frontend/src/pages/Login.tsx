@@ -1,8 +1,8 @@
-import OauthButton from "./components/OauthButton";
-import "./style.css";
+import OauthButton from "../components/OauthButton";
+import "../style.css";
 import { useEffect } from "react";
 
-function App() {
+function Login() {
   useEffect(() => {
     const rootElement = document.getElementById("root");
     if (rootElement) {
@@ -36,4 +36,4 @@ function App() {
   );
 }
 
-export default App;
+export default Login;

@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import defaultImage from "../assets/defaultPicture.png";
 
+import { useNavigate } from "react-router-dom";
+
 interface HeaderProps {
-  user_name: string;
-  image_url: string;
+  user_name: string | null;
+  image_url: string | null;
+  profile_id: string | null;
 }
 
-const Header = ({ user_name, image_url }: HeaderProps) => {
+const Header = ({ user_name, image_url, profile_id }: HeaderProps) => {
   // set dropdown default to closed
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
@@ -18,8 +21,11 @@ const Header = ({ user_name, image_url }: HeaderProps) => {
   // set default search results as empty
   const [searchResults, setSearchResults] = useState<User[]>([]);
 
+  const [loginUser, setLoginUser] = useState(profile_id);
+
   // get user and profile data on initial load
   useEffect(() => {
+    console.log("Login User: " + loginUser);
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
@@ -38,6 +44,17 @@ const Header = ({ user_name, image_url }: HeaderProps) => {
     };
   }, []);
 
+  const logOut = () => {
+    setLoginUser(null);
+    navigate("/");
+  };
+
+  const logIn = () => {
+    navigate("/login");
+  };
+
+  const navigate = useNavigate();
+
   // use default parameter:
   const onSearch = async (onSearchQuery = userSearchQuery) => {
     // clear previous search results
@@ -55,7 +72,7 @@ const Header = ({ user_name, image_url }: HeaderProps) => {
 
     // fetch spotify response using query and editCategory
     const searchResponse = await fetch(
-      `http://localhost:3000/user/search/${user_name}`,
+      `http://localhost:3000/user/search/${onSearchQuery}`,
       {
         method: "GET",
         headers: { "Content-Type": "application/json" },
@@ -161,10 +178,33 @@ const Header = ({ user_name, image_url }: HeaderProps) => {
             </div>
           </div>
         </div>
-        <img
+
+        {/* <img
           className="header-profile-picture"
           src={image_url ? image_url : defaultImage}
         />
+
+        <button type="button" className="btn btn-dark" onClick={logOut}>
+          <i className="bi bi-box-arrow-right"></i>
+        </button> */}
+
+        {loginUser != null ? (
+          <>
+            <img
+              className="header-profile-picture"
+              src={image_url ? image_url : defaultImage}
+            />
+            <button type="button" className="btn btn-dark" onClick={logOut}>
+              Sign out <i className="bi bi-box-arrow-right"></i>
+            </button>
+          </>
+        ) : (
+          <>
+            <button type="button" className="btn btn-dark" onClick={logIn}>
+              Sign in <i className="bi bi-box-arrow-in-right"></i>
+            </button>
+          </>
+        )}
       </div>
     </nav>
   );
