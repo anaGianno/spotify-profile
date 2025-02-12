@@ -98,12 +98,14 @@ function GoogleProfile() {
           console.log("Spotify Data:", spotifyData);
 
           const spotifyID = spotifyData[0].user_id;
-          navigate(`/profile/${spotifyID}`);
+          navigate(`/profile/${spotifyID}`, {
+            state: { fromNavigation: true },
+          });
           return;
         }
 
         // navigate to google profile page
-        navigate(`/profile/${user_id}`);
+        navigate(`/profile/${user_id}`, { state: { fromNavigation: true } });
       } catch (error) {
         console.error("Error authenticating google user: ", error);
       }

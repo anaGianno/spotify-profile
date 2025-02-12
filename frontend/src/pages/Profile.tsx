@@ -2,7 +2,7 @@ import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 import ProfilePicture from "../components/ProfilePicture";
-import Searchbar from "../components/Searchbar";
+import Searchbar from "../components/EditSearchbar";
 import Header from "../components/Header";
 
 import defaultImage from "../assets/defaultPicture.png";
@@ -77,7 +77,7 @@ function Profile() {
         modalElement.removeEventListener("shown.bs.modal", handleModalShown);
       }
     };
-  }, []);
+  }, [profile_id]);
 
   // get user data whenever a new item is added to the database
   useEffect(() => {
@@ -91,6 +91,7 @@ function Profile() {
   const handleProfile = async () => {
     try {
       // fetch user
+      console.log("profiles profile_id: ", profile_id);
       const userResponse = await fetch(
         `http://localhost:3000/user/${profile_id}`,
         {
@@ -120,7 +121,7 @@ function Profile() {
       setImage_url(userData.image_url);
       setUser_name(userData.user_name);
 
-      document.body.className = "profile";
+      // document.body.className = "profile";
 
       return () => {
         document.body.className = ""; // clean up when the component unmounts
@@ -230,9 +231,10 @@ function Profile() {
     // display profile
     <>
       <Header
-        user_name={user_name}
-        image_url={image_url}
-        profile_id={profile_id ?? null}
+        user_name={user_name ?? ""}
+        image_url={image_url ?? ""}
+        profile_id={profile_id ?? ""}
+        section={"profile"}
       />
 
       <div className="profile-parent">

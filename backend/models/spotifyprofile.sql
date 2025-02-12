@@ -1,6 +1,6 @@
 CREATE TABLE user_(
  user_id VARCHAR(255) PRIMARY KEY,
- user_name VARCHAR(16),
+ user_name VARCHAR(64),
  type_ VARCHAR(16),
  email VARCHAR(255),
  image_url VARCHAR(255)

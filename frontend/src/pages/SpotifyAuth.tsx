@@ -106,7 +106,7 @@ const SpotifyAuth = () => {
         console.log("Add spotify user response: ", addUserResponse);
 
         // navigate to spotify profile
-        navigate(`/profile/${user_id}`);
+        navigate(`/profile/${user_id}`, { state: { fromNavigation: true } });
       } catch (error) {
         console.error("Error authenticating spotify user: ", error);
       }

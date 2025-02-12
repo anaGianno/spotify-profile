@@ -39,7 +39,7 @@ const getSearchUser = async (req, res) => {
     const search_user_name = `%${user_name}%`;
     // get user using id
     const user = await database.query(
-      "SELECT * FROM user_ WHERE user_name LIKE $1",
+      "SELECT * FROM user_ WHERE user_name ILIKE $1",
       [search_user_name]
     );
 
@@ -61,6 +61,8 @@ const addUser = async (req, res) => {
   try {
     // get parameters from request
     const { user_id, user_name, type_, email, image_url } = req.body;
+
+    console.log("user: ", user_id, user_name, type_, email, image_url);
 
     // check for existing user
     const userResponse = await database.query(
