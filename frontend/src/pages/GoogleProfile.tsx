@@ -33,7 +33,7 @@ function GoogleProfile() {
 
         // log profile data
         const profileData = await profileResponse.json();
-        console.log("Profile Data :", profileData);
+        console.log("Google profile Data :", profileData);
 
         // get user parameters from profile
         const user_id = profileData.id;
@@ -57,7 +57,7 @@ function GoogleProfile() {
           const statusText = addUserResponse.statusText;
           const errorDetails = await addUserResponse.text();
 
-          console.error("Error adding profile to database:", {
+          console.error("Error adding google profile to database:", {
             status,
             statusText,
             details: errorDetails,
@@ -65,9 +65,6 @@ function GoogleProfile() {
 
           return;
         }
-
-        // log response
-        console.log("Add google user response: " + addUserResponse);
 
         // check if user has spotify linked
         const spotifyUserResponse = await fetch(
@@ -78,34 +75,39 @@ function GoogleProfile() {
           }
         );
 
-        // log response
-        console.log("Spotify User: ", spotifyUserResponse);
-
-        // log error if adding spotify account is unsuccessful
+        // log error if checking link failed
         if (!spotifyUserResponse.ok) {
           const status = spotifyUserResponse.status;
           const statusText = spotifyUserResponse.statusText;
           const errorDetails = await spotifyUserResponse.text();
 
-          console.error("Error fetching spotify profile:", {
+          console.error("Error checking google profile for spotify link:", {
             status,
             statusText,
             details: errorDetails,
           });
+
+          return;
+        }
+
+        // log error if adding spotify account is unsuccessful
+        if (spotifyUserResponse.status === 204) {
+          console.log(
+            "Google user not linked with spotify: Authentication Successful"
+          );
+          // navigate to google profile page
+          navigate(`/profile/${user_id}`, { state: { fromNavigation: true } });
         } else {
           // otherwise navigate to spotify profile page
+          console.log(
+            "Google user linked with spotify:  Authentication Successful"
+          );
           const spotifyData = await spotifyUserResponse.json();
-          console.log("Spotify Data:", spotifyData);
-
           const spotifyID = spotifyData[0].user_id;
           navigate(`/profile/${spotifyID}`, {
             state: { fromNavigation: true },
           });
-          return;
         }
-
-        // navigate to google profile page
-        navigate(`/profile/${user_id}`, { state: { fromNavigation: true } });
       } catch (error) {
         console.error("Error authenticating google user: ", error);
       }
@@ -114,7 +116,11 @@ function GoogleProfile() {
     fetchUser();
   }, []);
 
-  return <div>GoogleProfile</div>;
+  return (
+    <div className="loading">
+      <div className="spinner-border text-primary" role="status" />
+    </div>
+  );
 }
 
 export default GoogleProfile;

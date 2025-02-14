@@ -37,7 +37,7 @@ const searchSpotify = async (req, res) => {
     const searchReponse = await fetch(
       `https://api.spotify.com/v1/search?q=${encodeURIComponent(
         query
-      )}&type=${type}&limit=5&offset=0`,
+      )}&type=${type}&limit=10&offset=0`,
       {
         method: "GET",
         headers: { Authorization: `Bearer ${tokenData.access_token}` },
@@ -57,9 +57,10 @@ const searchSpotify = async (req, res) => {
     if (type === "artist") {
       // iterate through each artist in the items array
       data.artists.items.forEach((artist) => {
+        // get artist data
         const artist_id = artist.id;
-        const artist_name = artist.name || "Unknown Artist"; // get the first artist's name
-        const image_url = artist.images[0]?.url || "No Image Available"; // get the third image URL
+        const artist_name = artist.name || "Unknown Artist";
+        const image_url = artist.images[0]?.url || "No Image Available";
         const genres = artist.genres;
         const followers = artist.followers.total;
         // combine the data into an object and add it to the formattedResponse array
@@ -74,11 +75,12 @@ const searchSpotify = async (req, res) => {
     } else if (type === "album") {
       // iterate through each album in the items array
       data.albums.items.forEach((album) => {
-        const album_id = album.id; // get the album ID
-        const album_name = album.name || "Unknown Album"; // get the first artist's name
+        // get album data
+        const album_id = album.id;
+        const album_name = album.name || "Unknown Album";
         const album_release_date = album.release_date;
         const total_tracks = album.total_tracks;
-        const image_url = album.images[0]?.url || "No Image Available"; // get the first image URL
+        const image_url = album.images[0]?.url || "No Image Available";
         const artist_name = album.artists[0].name;
         // combine the data into an object and add it to the formattedResponse array
         formattedResponse.push({
@@ -93,12 +95,13 @@ const searchSpotify = async (req, res) => {
     } else if (type === "track") {
       // iterate through each track in the items array
       data.tracks.items.forEach((track) => {
-        const track_id = track.id; // get the track ID
-        const track_name = track.name || "Unknown track"; // get the first track's name
+        // get track data
+        const track_id = track.id;
+        const track_name = track.name || "Unknown track";
         const artist_name = track.artists[0].name;
         var duration = track.duration_ms;
         duration = millisToMinutesAndSeconds(duration);
-        const image_url = track.album.images[0]?.url || "No Image Available"; // get the first image URL
+        const image_url = track.album.images[0]?.url || "No Image Available";
         const track_release_date = track.album.release_date;
         const album_type = track.album.type;
         const album_name = track.album.name;

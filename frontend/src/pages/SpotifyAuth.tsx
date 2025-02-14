@@ -173,11 +173,7 @@ const SpotifyAuth = () => {
 
   return (
     <div className="loading">
-      <div className="spinner-border  text-primary" role="status">
-        <span className="visually-hidden " style={{}}>
-          Loading...
-        </span>
-      </div>
+      <div className="spinner-border  text-primary" role="status" />
     </div>
   );
 };

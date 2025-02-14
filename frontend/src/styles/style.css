@@ -1,0 +1,8 @@
+@import "./components/EditSearchbar.css";
+@import "./components/Header.css";
+@import "./components/Searchbar.css";
+@import "./globals/base.css";
+@import "./globals/utilities.css";
+@import "./pages/Home.css";
+@import "./pages/Login.css";
+@import "./pages/Profile.css";

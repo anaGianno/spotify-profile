@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import defaultImage from "../assets/defaultPicture.png";
 
 interface SearchbarProps {
+  // pass in update function
   triggerUpdate: () => void;
   // pass in category from profile
   editCategory: "artist" | "album" | "track";
@@ -30,16 +31,11 @@ const Searchbar = ({
     // clear previous search results
     setSearchResults([]);
 
-    // open dropdown when search button is clicked
-    setIsDropdownOpen(true);
-    console.log("Query:", onSearchQuery);
-    console.log("Category:", editCategory);
-
     // return early on an empty query
     if (onSearchQuery === "") {
-      console.log("Empty query, returning");
       return;
     }
+    console.log("Query for edit:", onSearchQuery);
 
     // fetch spotify response using query and editCategory
     const searchResponse = await fetch(
@@ -64,11 +60,14 @@ const Searchbar = ({
       });
     }
 
-    // log search response and data
-    console.log("Search response: ", searchResponse);
-    const searchData = await searchResponse.json();
-    console.log("Search Data: ", searchData);
+    // open dropdown when search button is clicked
+    setIsDropdownOpen(true);
 
+    // log search data
+    const searchData = await searchResponse.json();
+    console.log("Edit search Data: ", searchData);
+
+    // save search data to useState
     setSearchResults(searchData);
   };
 
@@ -76,16 +75,17 @@ const Searchbar = ({
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    // close dropdown if clicked element is not a child of the dropdown
     const handleClickOutside = (event: MouseEvent) => {
       if (
         dropdownRef.current &&
         !dropdownRef.current.contains(event.target as Node)
       ) {
-        // close dropdown if clicked element is not a child of the dropdown
         setIsDropdownOpen(false);
       }
     };
 
+    // add a listener for mouse clicks
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       // remove listener when component unmounts
@@ -93,6 +93,7 @@ const Searchbar = ({
     };
   }, []);
 
+  // reset search results/query when modal closes
   useEffect(() => {
     setSearchResults([]);
     setQuery("");
@@ -102,7 +103,8 @@ const Searchbar = ({
   const params = useParams<{ profileId: string }>();
   const profile_id = params.profileId;
 
-  const selectItem = async (item: Artist | Album | Track) => {
+  // add selected item to database
+  const addItem = async (item: Artist | Album | Track) => {
     console.log("Selected Item: ", item);
     if (!profile_id) {
       console.error("Profile ID is undefined");
@@ -130,6 +132,7 @@ const Searchbar = ({
       );
 
       const data = await response.json();
+
       if (!response.ok) {
         console.error(`Failed to add item: ${response.statusText}`);
         // display specific error message if it's related to the limit
@@ -143,6 +146,7 @@ const Searchbar = ({
       }
 
       console.log("Server response: ", data);
+      // trigger update passed in from profile to get update profile data
       triggerUpdate();
     } catch (error) {
       console.error("Error adding item: ", error);
@@ -150,16 +154,16 @@ const Searchbar = ({
   };
 
   return (
-    <nav className="navbar edit-searchbar" data-bs-theme="dark">
+    <nav className="navbar edit-navbar" data-bs-theme="dark">
       <div className="container-fluid d-flex justify-content-start">
-        {/* track the dropdown*/}
-        <div className="searches-container" ref={dropdownRef}>
+        {/* track the dropdown for click*/}
+        <div className="edit-searches-container" ref={dropdownRef}>
           {/* searchbar */}
           <div className="dropdown-wrapper">
             <div className="position-relative">
-              <i className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-2"></i>
+              <i className="bi bi-search position-absolute top-50 start-0 translate-middle-y ms-3"></i>
               <input
-                className="form-control"
+                className="form-control edit-searchbar"
                 style={{ paddingLeft: "30px" }}
                 type="search"
                 placeholder={`Search for ${editCategory}`}
@@ -179,9 +183,9 @@ const Searchbar = ({
               />
             </div>
 
-            {/* results collapse */}
+            {/* search results collapse */}
             <div
-              // display results based on state
+              // display results based on useState
               className={`collapse collapse-position ${
                 isDropdownOpen ? "show" : ""
               }`}
@@ -196,7 +200,6 @@ const Searchbar = ({
                 {/* display all results */}
                 {searchResults.map((result) => {
                   return (
-                    // bracket notation for dynamic access
                     <li
                       key={
                         result[
@@ -234,10 +237,9 @@ const Searchbar = ({
                         className="bi bi-plus-circle"
                         onClick={(e) => {
                           e.preventDefault();
-                          selectItem(result);
+                          addItem(result);
                         }}
                       />
-                      <div id="liveAlertPlaceholder"></div>
                     </li>
                   );
                 })}

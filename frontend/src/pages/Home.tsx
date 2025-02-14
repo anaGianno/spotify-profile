@@ -1,16 +1,14 @@
-import "../style.css";
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
 import Searchbar from "../components/Searchbar";
 import Header from "../components/Header";
 
 const Home = () => {
   return (
     <>
-      <Header user_name={""} image_url={""} profile_id={""} section={"home"} />
+      {/* set no profile data on homepage */}
+      <Header user_name={""} image_url={""} profile_id={""} page={"home"} />
       <div className="home-parent">
         <p className="home-text">Spotify Profile</p>
-        <Searchbar homepage={true} />
+        <Searchbar page={"home"} />
       </div>
     </>
   );

@@ -42,13 +42,13 @@ CREATE OR REPLACE FUNCTION fn_merge_accounts()
 AS
 $body$
 BEGIN
-    -- Check if there's an existing user with the same email and a different type
+    -- check if there's an existing user with the same email and a different type
     IF EXISTS (
         SELECT 1 
         FROM user_
         WHERE email = NEW.email AND type_ <> NEW.type_
     ) THEN
-        -- Update more values if its a google user
+        -- update more values if its a google user
 		IF EXISTS(
 			SELECT 1 
 			FROM user_
@@ -61,16 +61,16 @@ BEGIN
 			WHERE email = NEW.email;
 		END IF;
 		
-        -- Update the account to include both types
+        -- update the account to include both types
         UPDATE user_
         SET type_ = 'spotify-google'
         WHERE email = NEW.email;
 
-        -- Suppress insertion of the new row
+        -- suppress insertion of the new row
         RETURN NULL;
     END IF;
 
-    -- Allow the new row to be inserted if no matching email is found
+    -- allow the new row to be inserted if no matching email is found
     RETURN NEW;
 END;
 $body$;

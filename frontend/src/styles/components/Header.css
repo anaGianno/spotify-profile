@@ -1,0 +1,46 @@
+.header {
+  height: 3.5rem;
+  padding: 0 !important;
+  background-image: linear-gradient(rgb(24, 151, 92), rgb(23, 87, 73));
+}
+
+.header-flex-container {
+  max-width: 900px;
+  padding: 0 !important;
+  justify-content: space-between !important;
+  flex-wrap: nowrap !important;
+}
+
+.header-text {
+  line-height: 1;
+  max-width: 222px;
+  font-size: 25px;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.header-searches-container {
+  margin: auto;
+  max-width: 500px !important;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.header-profile-picture {
+  margin-left: auto;
+  max-width: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+  cursor: pointer;
+}
+
+.header-log-button {
+  margin-left: 1rem;
+  max-width: 104px;
+  max-height: 38px;
+  white-space: nowrap;
+}
+
+.bi.bi-box-arrow-right {
+  margin-left: auto;
+}

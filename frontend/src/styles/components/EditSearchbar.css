@@ -1,0 +1,24 @@
+.edit-navbar {
+  margin-bottom: 1rem;
+  border-radius: 5px;
+  border: 1px solid rgb(0, 243, 143, 0.25);
+  background-color: rgb(0, 15, 15, 0.5);
+}
+
+.container-fluid.d-flex.justify-content-start {
+  justify-content: center !important;
+}
+
+.edit-searches-container {
+  width: 100%;
+  max-width: 500px;
+  white-space: nowrap;
+}
+
+.edit-searchbar {
+  max-width: 500px !important;
+  width: 100%;
+  padding-left: 40px !important;
+  border-radius: 10rem !important;
+  white-space: nowrap;
+}

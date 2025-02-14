@@ -1,0 +1,27 @@
+.log-in-parent {
+  margin: 25rem auto;
+  border: 1px solid rgb(0, 243, 143, 0.25);
+  border-radius: 5px;
+  width: 25rem;
+  height: 25rem;
+  padding: 1rem;
+  background-color: rgb(0, 15, 15, 0.5);
+}
+
+.log-in-title {
+  margin-bottom: 1rem !important;
+  font-size: 2.5rem;
+}
+
+.log-in-subtext {
+  margin-bottom: 0.5rem !important;
+  font-size: 1rem;
+}
+
+.log-in-button-row {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-column-gap: 1rem;
+  justify-content: space-between;
+}

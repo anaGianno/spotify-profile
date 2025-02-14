@@ -62,17 +62,15 @@ const addUser = async (req, res) => {
     // get parameters from request
     const { user_id, user_name, type_, email, image_url } = req.body;
 
-    console.log("user: ", user_id, user_name, type_, email, image_url);
-
     // check for existing user
     const userResponse = await database.query(
       "SELECT * FROM user_ WHERE user_id = $1",
       [user_id]
     );
 
-    // return error if user already exists
+    // return 204 no content if user already exists
     if (userResponse.rows.length > 0) {
-      return res.status(200).send("Adding user with given ID already exists");
+      return res.status(204).send("Adding user with given ID already exists");
     }
 
     // add user
@@ -125,16 +123,12 @@ const checkSpotifyEmail = async (req, res) => {
       [req.params.email]
     );
 
-    // return error if user was not found/linked
+    // return 204 no content if user was not found/linked
     if (user.rows.length == 0) {
-      return res
-        .status(404)
-        .send(
-          `Error: user with the email: ${req.params.email} was not found/linked with spotify.`
-        );
+      return res.status(204).send(user.rows);
     }
 
-    res.send(user.rows);
+    res.status(200).send(user.rows);
   } catch (err) {
     console.error("Error checking spotify email: ", err.message);
     return res.status(500).send("Error checking spotify email: " + err.message);

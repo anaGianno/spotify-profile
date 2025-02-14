@@ -1,9 +1,7 @@
-// import { StrictMode } from "react";
+import "./styles/style.css";
 import { createRoot } from "react-dom/client";
-
 import "bootstrap/dist/css/bootstrap.css";
-import "bootstrap/dist/css/bootstrap.css"; // Bootstrap CSS
-import "bootstrap/dist/js/bootstrap.bundle.min.js"; // Bootstrap JS bundle (includes Popper.js)
+import "bootstrap/dist/js/bootstrap.bundle.min.js";
 
 // import router and pages
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -51,8 +49,5 @@ const router = createBrowserRouter([
 ]);
 
 createRoot(document.getElementById("root")!).render(
-  // <StrictMode>
-  //<App />
   <RouterProvider router={router} />
-  // </StrictMode>
 );

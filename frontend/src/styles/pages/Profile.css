@@ -1,0 +1,258 @@
+.profile-searchbar {
+  border-radius: 10rem !important;
+  padding-left: 40px !important;
+}
+
+.profile-parent {
+  margin: 7.5rem auto;
+  margin-top: 3rem;
+  margin-bottom: 0;
+  box-sizing: border-box;
+  max-width: 900px;
+  height: 1150px;
+  border: 1px solid rgb(0, 243, 143, 0.25);
+  border-radius: 5px;
+  padding: 1rem;
+  background-color: rgb(0, 15, 15, 0.5);
+}
+
+/* profile top */
+.profile-top-container {
+  position: relative;
+  margin-bottom: 1rem;
+  width: 100%;
+  height: 25%;
+}
+
+.profile-top {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 5px;
+  background-image: linear-gradient(rgb(0, 243, 143), rgb(19, 60, 51));
+}
+
+.profile-top-username {
+  position: absolute;
+  top: 6rem;
+  left: 16rem;
+  font-size: 4em;
+}
+
+.profile-top-picture {
+  display: block;
+  position: absolute;
+  box-shadow: 0px 0px 40px rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  top: 2.5rem;
+  left: 2rem;
+  width: 12.5rem;
+  height: 12.5rem;
+  user-select: none;
+}
+
+/* category buttongroup */
+.btn-group.category-select {
+  width: 100%;
+}
+
+.category-text {
+  display: inline-block;
+  font-size: 1.5rem;
+}
+
+/* profile data */
+.list-group-flex {
+  display: flex;
+  margin-top: 1rem;
+  flex-direction: column;
+  height: 47.5rem;
+  justify-content: space-between;
+  align-items: center;
+  align-items: space-between;
+  padding: 1rem;
+  border: 1px solid rgb(0, 243, 143, 0.25);
+  border-radius: 5px;
+  background-color: rgb(0, 15, 15, 0.5);
+}
+
+.list-group-container {
+  display: inline-block;
+  width: 100%;
+}
+
+.category-edit-flex {
+  display: flex;
+}
+
+.btn-success.btn-edit {
+  display: none;
+  margin-left: auto !important;
+  margin-right: 0 !important;
+  box-sizing: border-box;
+  visibility: hidden;
+  width: 37px;
+  height: 33px;
+  padding: 5px;
+}
+
+.list-group-flex:hover .btn-success.btn-edit {
+  display: inline-block;
+  visibility: visible;
+}
+
+.bi-pen {
+  color: white;
+}
+
+.list-group.user-items {
+  border-top: 1px solid rgb(0, 243, 143, 0.25);
+  border-left: 1px solid rgb(0, 243, 143, 0.25);
+  border-right: 1px solid rgb(0, 243, 143, 0.25);
+  border-radius: 5px;
+  height: auto;
+  width: 100%;
+  margin-top: 0.5rem;
+  background-color: rgb(0, 15, 15, 0.5);
+}
+
+.list-group-item.user-item {
+  border-top: 0px solid rgb(0, 243, 143, 0.25);
+  border-left: 0px solid rgb(0, 243, 143, 0.25);
+  border-right: 0px solid rgb(0, 243, 143, 0.25);
+  border-bottom: 1px solid rgb(0, 243, 143, 0.25);
+  width: 100%;
+  background-color: rgb(0, 15, 15, 0.5);
+}
+
+.list-group-item.user-item:hover {
+  background-color: rgb(0, 25, 25, 0.5);
+  cursor: pointer;
+}
+
+/* edit modal */
+.modal-dialog.edit-modal-dialog {
+  margin: 2rem auto;
+  --bs-modal-width: 1000px !important;
+  max-width: 1000px;
+}
+
+.modal-content.edit-modal-content {
+  border: 1px solid rgb(0, 243, 143, 0.3);
+  max-width: 1000px;
+  background-color: rgb(6, 26, 23);
+}
+
+.modal-header.edit-modal-header {
+  border-bottom: 1px solid rgb(0, 243, 143, 0.3);
+  justify-content: space-between;
+}
+
+.modal-title.fs-5.profile-modal-title {
+  font-size: 32px !important;
+}
+
+.bi-plus-circle::before {
+  font-size: 20px;
+}
+
+.bi-plus-circle:hover::before {
+  cursor: pointer;
+  color: rgb(255, 255, 255);
+}
+
+.bi-plus-circle:active::before {
+  width: 20px;
+  height: 20px;
+  padding-left: 1.5px;
+  padding-bottom: 2px;
+  font-size: 17.5px;
+  cursor: pointer;
+  color: rgb(255, 255, 255);
+}
+
+.bi-x-circle::before {
+  font-size: 20px;
+  cursor: pointer;
+  color: rgb(0, 243, 143, 0.6);
+}
+
+.bi-x-circle:hover::before {
+  color: rgba(0, 255, 149, 0.75);
+}
+
+.bi-x-circle:active::before {
+  width: 20px;
+  height: 20px;
+  padding-left: 1.5px;
+  padding-bottom: 2px;
+  font-size: 17.5px;
+  cursor: pointer;
+  color: rgba(0, 255, 149, 0.75);
+}
+
+/* details modal */
+.modal-dialog.profile-modal-dialog {
+  margin: 30vh auto;
+  --bs-modal-width: 600px !important;
+  max-width: 750px;
+  --bs-modal-height: 750px !important;
+}
+
+.modal-content.profile-modal-content {
+  border: 1px solid rgb(0, 243, 143, 0.3);
+  max-width: 750px;
+  background-color: rgb(6, 26, 23);
+}
+
+.modal-header.profile-modal-header {
+  border-bottom: 1px solid rgb(0, 243, 143, 0.3);
+  padding-left: 1.5rem;
+  justify-content: space-between;
+}
+
+.details-modal-body {
+  display: flex;
+  padding: 1.5rem !important;
+}
+
+.details-modal-image {
+  margin-right: 1.5rem;
+  width: 300px;
+  height: 300px;
+  object-fit: cover;
+  border-radius: 5px;
+}
+
+.details-container {
+  flex: 1;
+  height: 300px;
+  padding-right: 2rem;
+}
+
+.details-name {
+  margin: 0 !important;
+  font-size: 24px;
+  padding: 0 !important;
+  line-height: 1;
+}
+
+.details-text {
+  font-size: 18px;
+  color: lightgray;
+}
+
+/* zoom adjust */
+@media (max-width: 555px) {
+  .profile-top-username {
+    display: block;
+    position: absolute;
+    top: 6rem;
+    left: 16rem;
+    font-size: 3rem;
+  }
+
+  .list-group-item.d-flex.align-items-center.edit-search-item {
+    max-width: 435px;
+  }
+}

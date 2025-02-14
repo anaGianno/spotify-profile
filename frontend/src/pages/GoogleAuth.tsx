@@ -1,9 +1,9 @@
 import { useEffect } from "react";
 
-const GoogleAuth = () => {
+function GoogleAuth() {
   useEffect(() => {
     const handleCallback = async () => {
-      // Redirects to backend; top level navigation request, not a fetch request
+      // redirects to backend to external authentication page using backend route
       window.location.href = "http://localhost:3000/auth/google";
     };
     handleCallback();
@@ -11,13 +11,9 @@ const GoogleAuth = () => {
 
   return (
     <div className="loading">
-      <div className="spinner-border  text-primary" role="status">
-        <span className="visually-hidden " style={{}}>
-          Loading...
-        </span>
-      </div>
+      <div className="spinner-border  text-primary" role="status" />
     </div>
   );
-};
+}
 
 export default GoogleAuth;

@@ -1,0 +1,34 @@
+.home-parent {
+  display: flex;
+  min-height: calc(100vh - 3.5rem);
+  padding-bottom: 5rem;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.home-text {
+  margin-bottom: 5rem !important;
+  margin-top: 7.5rem;
+  font-size: 64px;
+}
+
+.home-searchbar {
+  border-radius: 10rem !important;
+  height: 3rem;
+  padding-left: 40px !important;
+}
+
+.home-searches-container {
+  width: 100%;
+  max-width: 800px;
+  white-space: nowrap;
+}
+
+.collapse.home-collapse-position {
+  margin-top: 0.4rem;
+  max-width: 800px;
+  width: 100%;
+  position: absolute;
+  z-index: 1000;
+}

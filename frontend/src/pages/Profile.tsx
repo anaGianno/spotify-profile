@@ -1,35 +1,36 @@
 import { useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-
-import ProfilePicture from "../components/ProfilePicture";
 import Searchbar from "../components/EditSearchbar";
 import Header from "../components/Header";
-
 import defaultImage from "../assets/defaultPicture.png";
-
 import React from "react";
 
 function Profile() {
-  // initialize image and username in null state
+  // image and username in null state
   const [image_url, setImage_url] = useState(null);
   const [user_name, setUser_name] = useState(null);
 
-  // initialize user data
+  // user data
   const [userTracks, setUserTracks] = useState<Track[]>([]);
   const [userAlbums, setUserAlbums] = useState<Album[]>([]);
   const [userArtists, setUserArtists] = useState<Artist[]>([]);
 
-  // initialize profile ID from URL
+  // profile ID from URL
   const params = useParams<{ profileId: string }>();
   const profile_id = params.profileId;
 
-  // initialize trigger for getting user data
-  const [shouldFetchUserData, setShouldFetchUserData] = useState(false);
+  // trigger for getting user data
+  const [shouldFetchUserItems, setShouldFetchUserItems] = useState(false);
 
+  // selected item category
   const [selectedCategory, setSelectedCategory] = useState<
     "artist" | "album" | "track"
   >("artist");
 
+  // modal state
+  const [isModalClosed, setIsModalClosed] = useState(true);
+
+  // use capitalised category to display selected category items
   const capitalizedSelectedCategory = `user${
     selectedCategory.charAt(0).toUpperCase() + selectedCategory.slice(1)
   }s`;
@@ -42,12 +43,10 @@ function Profile() {
 
   const items = data[capitalizedSelectedCategory as keyof typeof data] || [];
 
-  const [isModalClosed, setIsModalClosed] = useState(true);
-
-  // get user and profile data on initial load
   useEffect(() => {
-    handleProfile();
-    setShouldFetchUserData(true);
+    fetchUser();
+    // get user and profile data on initial load
+    setShouldFetchUserItems(true);
 
     const modalElement = document.getElementById("editModal");
 
@@ -81,17 +80,16 @@ function Profile() {
 
   // get user data whenever a new item is added to the database
   useEffect(() => {
-    if (shouldFetchUserData) {
-      getUserData();
+    if (shouldFetchUserItems) {
+      fetchUserItems();
       // reset the state after fetching
-      setShouldFetchUserData(false);
+      setShouldFetchUserItems(false);
     }
-  }, [shouldFetchUserData]);
+  }, [shouldFetchUserItems]);
 
-  const handleProfile = async () => {
+  // get user data and set their image/name
+  const fetchUser = async () => {
     try {
-      // fetch user
-      console.log("profiles profile_id: ", profile_id);
       const userResponse = await fetch(
         `http://localhost:3000/user/${profile_id}`,
         {
@@ -112,28 +110,21 @@ function Profile() {
         });
       }
 
-      // log user response and data
-      console.log("User response: ", userResponse);
+      // log user data
       const userData = await userResponse.json();
-      console.log("User Data: ", userData);
+      console.log("Fetched user data: ", userData);
 
       // set state of image and username to user data
       setImage_url(userData.image_url);
       setUser_name(userData.user_name);
-
-      // document.body.className = "profile";
-
-      return () => {
-        document.body.className = ""; // clean up when the component unmounts
-      };
     } catch (error) {
       console.error("Error in profile callback: ", error);
     }
   };
 
-  const getUserData = async () => {
+  const fetchUserItems = async () => {
     try {
-      // get user tracks
+      // get/set user tracks
       const trackResponse = await fetch(
         `http://localhost:3000/track/${profile_id}`,
         {
@@ -150,7 +141,7 @@ function Profile() {
       console.log("User tracks: ", trackData);
       setUserTracks(trackData);
 
-      // get user albums
+      // get/set user albums
       const albumResponse = await fetch(
         `http://localhost:3000/album/${profile_id}`,
         {
@@ -167,7 +158,7 @@ function Profile() {
       console.log("User albums: ", albumData);
       setUserAlbums(albumData);
 
-      // get user artists
+      // get/set user artists
       const artistReponse = await fetch(
         `http://localhost:3000/artist/${profile_id}`,
         {
@@ -190,23 +181,13 @@ function Profile() {
     }
   };
 
-  const deleteItem = async (item: Artist | Album | Track, category: string) => {
-    console.log("Deleting Item: ", item);
-    if (!profile_id) {
-      console.error("Profile ID is undefined");
-      return;
-    }
-    console.log(
-      `http://localhost:3000/${category}/${profile_id}?${category}_id=${
-        item[`${category}_id` as keyof (Artist | Album | Track)]
-      }`
-    );
-
+  // delete selected item from database
+  const deleteItem = async (item: Artist | Album | Track) => {
     try {
       // delete item from database
       const response = await fetch(
-        `http://localhost:3000/${category}/${profile_id}?${category}_id=${
-          item[`${category}_id` as keyof (Artist | Album | Track)]
+        `http://localhost:3000/${selectedCategory}/${profile_id}?${selectedCategory}_id=${
+          item[`${selectedCategory}_id` as keyof (Artist | Album | Track)]
         }`,
         {
           method: "DELETE",
@@ -217,43 +198,47 @@ function Profile() {
 
       if (!response.ok) {
         console.error(`Failed to delete item: ${response.statusText}`);
+        return;
       }
 
-      console.log("Deleted item");
-      console.log("Delete item response: ", response);
-      setShouldFetchUserData(true);
+      console.log("Deleted item: ", item);
+      setShouldFetchUserItems(true);
     } catch (error) {
       console.error("Error deleting item: ", error);
     }
   };
 
+  // get stored profile from local storage
+  const isLoggedIn = localStorage.getItem("loggedInProfile");
+
   return (
-    // display profile
     <>
       <Header
         user_name={user_name ?? ""}
         image_url={image_url ?? ""}
         profile_id={profile_id ?? ""}
-        section={"profile"}
+        page={"profile"}
       />
-
       <div className="profile-parent">
         <div className="profile-top-container">
           <div className="profile-top" />
-
+          {/* display profile image/username */}
           {image_url ? (
-            <ProfilePicture src={image_url} />
+            <img
+              src={image_url}
+              className="img-fluid profile-top-picture"
+              alt="profile-top-picture"
+            ></img>
           ) : (
             <div>No image available</div>
           )}
-
           {user_name ? (
             <p className="profile-top-username">{user_name}</p>
           ) : (
-            <p>No user_name available</p>
+            <p>No username available</p>
           )}
         </div>
-
+        {/* category buttons */}
         <div
           className="btn-group category-select"
           role="group"
@@ -271,7 +256,6 @@ function Profile() {
           <label className="btn btn-outline-success" htmlFor="btnradio1">
             Artist
           </label>
-
           <input
             type="radio"
             className="btn-check"
@@ -284,7 +268,6 @@ function Profile() {
           <label className="btn btn-outline-success" htmlFor="btnradio2">
             Album
           </label>
-
           <input
             type="radio"
             className="btn-check"
@@ -301,21 +284,27 @@ function Profile() {
 
         <div className="list-group-flex">
           <div className="list-group-container">
+            {/* category name and edit button */}
             <div className="category-edit-flex">
               <p className="category-text">
                 {selectedCategory.charAt(0).toUpperCase() +
                   selectedCategory.slice(1)}
               </p>
-              <button
-                type="button"
-                className="btn btn-success btn-edit"
-                data-bs-toggle="modal"
-                data-bs-target="#editModal"
-              >
-                <i className="bi bi-pen"></i>
-              </button>
+              {isLoggedIn === profile_id ? (
+                <button
+                  type="button"
+                  className="btn btn-success btn-edit"
+                  data-bs-toggle="modal"
+                  data-bs-target="#editModal"
+                >
+                  <i className="bi bi-pen"></i>
+                </button>
+              ) : (
+                <></>
+              )}
             </div>
 
+            {/* user items based on category */}
             <div className="list-group user-items">
               {items.map((item) => {
                 return (
@@ -331,15 +320,6 @@ function Profile() {
                     }
                   >
                     <li
-                      key={
-                        item[
-                          `${selectedCategory}_id` as keyof (
-                            | Artist
-                            | Album
-                            | Track
-                          )
-                        ]
-                      }
                       className="list-group-item user-item d-flex align-items-center"
                       data-bs-toggle="modal"
                       data-bs-target={`#${
@@ -375,6 +355,7 @@ function Profile() {
                       </div>
                     </li>
 
+                    {/* modal of item information */}
                     <div
                       className="modal fade"
                       id={`${
@@ -409,20 +390,21 @@ function Profile() {
                             <div data-bs-theme="dark">
                               <button
                                 type="button"
-                                className="btn-close edit-btn-close"
+                                className="btn-close"
                                 data-bs-dismiss="modal"
                                 aria-label="Close"
                               ></button>
                             </div>
                           </div>
-                          <div className="modal-body modal-body-details">
+                          <div className="modal-body details-modal-body">
+                            <img
+                              className="details-modal-image"
+                              src={item.image_url || defaultImage}
+                              alt={selectedCategory}
+                            />
+                            {/* display track modal details */}
                             {"track_id" in item ? (
                               <>
-                                <img
-                                  className="modal-image"
-                                  src={item.image_url || defaultImage}
-                                  alt={selectedCategory}
-                                />
                                 <div className="overflow-auto">
                                   <div className="details-container">
                                     <p className="details-name">
@@ -452,15 +434,11 @@ function Profile() {
                                   </div>
                                 </div>
                               </>
-                            ) : "album_id" in item ? (
+                            ) : // display album item details
+                            "album_id" in item ? (
                               <>
-                                <img
-                                  className="modal-image"
-                                  src={item.image_url || defaultImage}
-                                  alt={selectedCategory}
-                                />
-                                <div className="details-container">
-                                  <div className="text-container">
+                                <div className="overflow-auto">
+                                  <div className="details-container">
                                     <p className="details-name">
                                       {
                                         item[
@@ -487,33 +465,33 @@ function Profile() {
                                   </div>
                                 </div>
                               </>
-                            ) : "artist_id" in item ? (
+                            ) : // display artist modal details
+                            "artist_id" in item ? (
                               <>
-                                <img
-                                  className="modal-image"
-                                  src={item.image_url || defaultImage}
-                                  alt={selectedCategory}
-                                />
-                                <div className="details-container">
-                                  <p className="details-name">
-                                    {
-                                      item[
-                                        `${selectedCategory}_name` as keyof Artist
-                                      ]
-                                    }
-                                  </p>
-                                  <h2>Genre</h2>
-                                  <p className="details-text">
-                                    {(
-                                      item[`genres` as keyof Artist] as string[]
-                                    ).join(", ")}
-                                  </p>
-                                  <h2>Followers</h2>
-                                  <p className="details-text">
-                                    {item[
-                                      "followers" as keyof Artist
-                                    ].toLocaleString()}
-                                  </p>
+                                <div className="overflow-auto">
+                                  <div className="details-container">
+                                    <p className="details-name">
+                                      {
+                                        item[
+                                          `${selectedCategory}_name` as keyof Artist
+                                        ]
+                                      }
+                                    </p>
+                                    <h2>Genre</h2>
+                                    <p className="details-text">
+                                      {(
+                                        item[
+                                          `genres` as keyof Artist
+                                        ] as string[]
+                                      ).join(", ")}
+                                    </p>
+                                    <h2>Followers</h2>
+                                    <p className="details-text">
+                                      {item[
+                                        "followers" as keyof Artist
+                                      ].toLocaleString()}
+                                    </p>
+                                  </div>
                                 </div>
                               </>
                             ) : (
@@ -529,6 +507,7 @@ function Profile() {
             </div>
           </div>
 
+          {/* modal for editting items */}
           <div
             className="modal fade"
             id="editModal"
@@ -555,13 +534,14 @@ function Profile() {
                   </div>
                 </div>
                 <div className="modal-body">
-                  {/* searchbar that gets user data when a new item is added */}
+                  {/* searchbar that gets refreshes display of user items when a new item is added */}
                   <Searchbar
-                    triggerUpdate={() => setShouldFetchUserData(true)}
+                    triggerUpdate={() => setShouldFetchUserItems(true)}
                     editCategory={selectedCategory}
                     modalIsClosed={isModalClosed}
                   />
                   <div className="list-group user-items">
+                    {/* display items based on category */}
                     {items.map((item) => {
                       return (
                         <li
@@ -599,7 +579,7 @@ function Profile() {
                             <i
                               className="bi bi-x-circle"
                               onClick={() => {
-                                deleteItem(item, `${selectedCategory}`);
+                                deleteItem(item);
                               }}
                             ></i>
                           </div>

@@ -1,0 +1,25 @@
+.position-relative {
+  width: 100%;
+}
+
+.bi-search {
+  color: white;
+}
+
+.list-group.list-group-search {
+  width: 100%;
+}
+
+.collapse.collapse-position {
+  position: absolute;
+  margin-top: 0.4rem;
+  max-width: 500px;
+  width: 100%;
+  z-index: 1000;
+}
+
+.list-group-item.d-flex.align-items-center.search-item {
+  box-sizing: border-box;
+  width: 100%;
+  cursor: pointer;
+}
