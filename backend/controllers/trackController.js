@@ -60,7 +60,7 @@ const addTrack = async (req, res) => {
     res.json(trackResponse.rows[0]);
   } catch (err) {
     console.error("Error adding track: ", err.message);
-    // Check for PostgreSQL exception related to the trigger
+    // check for postgreSQL exception related to the trigger
     if (err.message.includes("Cannot insert more than 10 tracks")) {
       return res
         .status(400)

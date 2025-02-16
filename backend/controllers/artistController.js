@@ -57,6 +57,12 @@ const addArtist = async (req, res) => {
     res.json(newArtist.rows[0]);
   } catch (err) {
     console.error("Error adding artist: ", err.message);
+    // check for postgres exception related to the trigger
+    if (err.message.includes("Cannot insert more than 10 artists")) {
+      return res
+        .status(400)
+        .json({ error: "Item limit reached (10 maximum)." });
+    }
     return res.status(500).send("Error adding artist: " + err.message);
   }
 };

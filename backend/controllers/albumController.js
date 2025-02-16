@@ -56,6 +56,12 @@ const addAlbum = async (req, res) => {
     res.json(newAlbum.rows[0]);
   } catch (err) {
     console.error("Error adding album: ", err.message);
+    // check for postgres exception related to the trigger
+    if (err.message.includes("Cannot insert more than 10 albums")) {
+      return res
+        .status(400)
+        .json({ error: "Item limit reached (10 maximum)." });
+    }
     return res.status(500).send("Error adding album: " + err.message);
   }
 };

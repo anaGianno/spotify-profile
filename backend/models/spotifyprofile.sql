@@ -96,14 +96,45 @@ ALTER SEQUENCE user_user_id_seq RESTART WITH 1
 CREATE OR REPLACE FUNCTION limit_track_rows()
 RETURNS TRIGGER AS $$
 BEGIN
-    IF (SELECT COUNT(*) FROM track) >= 10 THEN
+    IF (SELECT COUNT(*) FROM track WHERE track_user_id = NEW.track_user_id) >= 10 THEN
         RAISE EXCEPTION 'Cannot insert more than 10 tracks.';
     END IF;
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE TRIGGER track_limit_trigger
+CREATE OR REPLACE TRIGGER track_limit_trigger
 BEFORE INSERT ON track
 FOR EACH ROW
 EXECUTE FUNCTION limit_track_rows();
+
+CREATE OR REPLACE FUNCTION limit_album_rows()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (SELECT COUNT(*) FROM album WHERE album_user_id = NEW.album_user_id) >= 10 THEN
+        RAISE EXCEPTION 'Cannot insert more than 10 albums.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER album_limit_trigger
+BEFORE INSERT ON album
+FOR EACH ROW
+EXECUTE FUNCTION limit_album_rows();
+
+CREATE OR REPLACE FUNCTION limit_artist_rows()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (SELECT COUNT(*) FROM artist WHERE artist_user_id = NEW.artist_user_id) >= 10 THEN
+        RAISE EXCEPTION 'Cannot insert more than 10 artists.';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE TRIGGER artist_limit_trigger
+BEFORE INSERT ON artist
+FOR EACH ROW
+EXECUTE FUNCTION limit_artist_rows();
+

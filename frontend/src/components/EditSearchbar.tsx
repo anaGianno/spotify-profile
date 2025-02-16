@@ -136,8 +136,8 @@ const Searchbar = ({
       if (!response.ok) {
         console.error(`Failed to add item: ${response.statusText}`);
         // display specific error message if it's related to the limit
-        if (data.error === "Track limit reached (10 maximum).") {
-          alert("You can't add more than 10 tracks!");
+        if (data.error === "Item limit reached (10 maximum).") {
+          alert("You can't add more than 10 items!");
         } else {
           console.error(`Failed to add item: ${data.error}`);
           alert("An error occurred while adding the item.");

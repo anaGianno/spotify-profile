@@ -142,6 +142,8 @@ const Searchbar = ({ page }: SearchbarProps) => {
           <div className="list-group list-group-search">
             {/* display all results */}
             {searchResults.map((result) => {
+              console.log("result:", result);
+              console.log("resultImageURL:", result.image_url);
               return (
                 <li
                   key={result.user_id}
@@ -159,12 +161,10 @@ const Searchbar = ({ page }: SearchbarProps) => {
                           ? defaultImage
                           : result.image_url
                       }
-                      alt="Artist"
+                      alt="User"
                     />
                     <span className="item-text">{result.user_name}</span>
                   </div>
-
-                  <div id="liveAlertPlaceholder"></div>
                 </li>
               );
             })}
