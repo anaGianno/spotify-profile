@@ -9,7 +9,8 @@ const app = express();
 const cors = require("cors");
 app.use(
   cors({
-    origin: "http://localhost:5173",
+    // allow all origins
+    origin: "*",
     methods: "GET, POST, DELETE",
     credentials: true,
   })
@@ -54,8 +55,13 @@ app.use("/spotify", spotifyRoute);
 app.use("/track", trackRoute);
 app.use("/user", userRoute);
 
-//server listen on a port: read port environment value otherwise use port 3000
+// Simple route for testing
+app.get("/", (req, res) => {
+  res.send("Hello, World!");
+});
+
+//server listen on a port: read port environment value otherwise use port 8080
 const port = process.env.PORT || 3000;
-app.listen(port, () =>
-  console.log(`Server started at http://localhost:${port}...`)
-);
+app.listen(port, "0.0.0.0", () => {
+  console.log(`Server is running on http://0.0.0.0:${port}`);
+});

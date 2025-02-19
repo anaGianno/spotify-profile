@@ -1,0 +1,33 @@
+# each key inside services represents a different container that we want to run
+services:
+  # web to define the node js app
+  frontend:
+    # point to current working directory where it can find the docker file
+    build: ./frontend
+    # port forwarding
+    ports:
+      - "5173:5173"
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    env_file:
+      - ./backend/.env
+    # environment:
+    #   - GOOGLE_CLIENT_ID= ${GOOGLE_CLIENT_ID}
+    #   - GOOGLE_CLIENT_SECRET= ${GOOGLE_CLIENT_SECRET}
+  db:
+    image: postgres:latest
+    env_file:
+      - ./backend/.env
+    # store database data across multiple containers
+    volumes:
+      # mount volume in db container
+      - spotifyprofile_data:/var/lib/postgresql/data
+
+# create volume
+volumes:
+  spotifyprofile_data:
+
+  # docker compose up
+  # docker compose down

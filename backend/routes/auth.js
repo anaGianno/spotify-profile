@@ -11,10 +11,10 @@ passport.use(
   new GoogleStrategy(
     {
       // passing client id and secret from environment
-      clientID: process.env.CLIENT_ID,
-      clientSecret: process.env.CLIENT_SECRET,
+      clientID: process.env.GOOGLE_CLIENT_ID,
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       // callback will receive the users google profile
-      callbackURL: "http://localhost:3000/auth/google/callback",
+      callbackURL: "/auth/google/callback",
     },
     // passing user profile data through done function: save to database later
     (accessToken, refreshToken, profile, done) => {

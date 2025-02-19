@@ -1,5 +1,36 @@
 const passport = require("passport");
 
+// get google profile
+const getGoogleProfile = (req, res) => {
+  try {
+    // return error if no user found in session
+    if (!req.user) {
+      return res.status(401).send("Error: google user not found");
+    }
+
+    res.status(200).json(req.user);
+  } catch (error) {
+    res.status(500).send("Error sending Google proifle: " + err.message);
+    return res.status(500).send("Error sending Google profile: " + err.message);
+  }
+};
+
+// authenticate through google then go to callback URL
+const googleAuth = passport.authenticate("google", {
+  scope: ["profile", "email"],
+});
+
+// redirect to frontend on successful authentication
+const googleCallback = [
+  // go to homepage on failed authentication
+  passport.authenticate("google", { failureRedirect: "/" }),
+  (req, res) => {
+    // fallback to localhost if not set
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+    res.redirect(`${frontendUrl}/auth/google/callback`);
+  },
+];
+
 // get spotify access token
 const getSpotifyAccessToken = async (req, res) => {
   try {
@@ -101,35 +132,6 @@ const getSpotifyProfile = async (req, res) => {
       .send("Error fetching spotify profile: " + err.message);
   }
 };
-
-// get google profile
-const getGoogleProfile = (req, res) => {
-  try {
-    // return error if no user found in session
-    if (!req.user) {
-      return res.status(401).send("Error: google user not found");
-    }
-
-    res.status(200).json(req.user);
-  } catch (error) {
-    res.status(500).send("Error sending Google proifle: " + err.message);
-    return res.status(500).send("Error sending Google profile: " + err.message);
-  }
-};
-
-// authenticate through google then go to callback URL
-const googleAuth = passport.authenticate("google", {
-  scope: ["profile", "email"],
-});
-
-// redirect to frontend on successful authentication
-const googleCallback = [
-  // go to homepage on failed authentication
-  passport.authenticate("google", { failureRedirect: "/" }),
-  (req, res) => {
-    res.redirect("http://localhost:5173/auth/google/callback");
-  },
-];
 
 // redirect to homepage
 const logout = (req, res) => {
