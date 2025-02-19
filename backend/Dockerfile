@@ -1,7 +1,7 @@
-# use node base image. LAYER 1
+# use node base image. 
 FROM node:22
 
-# add app source code to image. cd into directory. LAYER 2. set the working directory inside the container.
+# add app source code to image. cd into directory. set the working directory inside the container.
 WORKDIR /app
 
 # copy package files
